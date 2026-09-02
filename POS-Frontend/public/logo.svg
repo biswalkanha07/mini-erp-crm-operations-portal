@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64" width="240" height="64">
+  <defs>
+    <linearGradient id="logoBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#1E3A8A" />
+    </linearGradient>
+    <linearGradient id="logoAccentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA" />
+      <stop offset="100%" stop-color="#3B82F6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Logo Icon Mark (Left) -->
+  <g transform="translate(4, 4)">
+    <!-- Base Rounded Square -->
+    <rect x="0" y="0" width="56" height="56" rx="14" fill="url(#logoBgGrad)" />
+    
+    <!-- Isometric Layers -->
+    <path d="M28 12 L44 20 L28 28 L12 20 Z" fill="#FFFFFF" opacity="0.95" />
+    <path d="M12 26 L28 34 L44 26 L44 31 L28 39 L12 31 Z" fill="url(#logoAccentGrad)" opacity="0.9" />
+    <path d="M12 37 L28 45 L44 37 L44 42 L28 50 L12 42 Z" fill="#93C5FD" opacity="0.9" />
+    <circle cx="28" cy="20" r="2.5" fill="#1E3A8A" />
+  </g>
+
+  <!-- Typography (Right) -->
+  <text x="72" y="27" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="800" fill="#0F172A" letter-spacing="-0.5">MINI ERP + CRM</text>
+  <text x="72" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#2563EB" letter-spacing="0.8">OPERATIONS PORTAL</text>
+</svg>

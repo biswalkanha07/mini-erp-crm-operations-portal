@@ -11,6 +11,8 @@ export const searchCatalogues = (params?: {
   maxPrice?: number;
   minStock?: number;
   maxStock?: number;
+  lowStock?: boolean | string;
+  warehouseLocation?: string;
   sortBy?: string;
   sortOrder?: number;
   categoryId?: string;
@@ -18,11 +20,8 @@ export const searchCatalogues = (params?: {
   return catalogueAPI.search(params || {});
 };
 
-export const getCatalogues = (params?: { search?: string }) => {
-  if (params && params.search) {
-    return catalogueAPI.getAll({ params: { search: params.search } });
-  }
-  return catalogueAPI.getAll();
+export const getCatalogues = (params?: { search?: string; categoryId?: string; lowStock?: boolean | string; warehouseLocation?: string; page?: number; limit?: number }) => {
+  return catalogueAPI.getAll({ params });
 };
 export const getCatalogueById = (id: string) => catalogueAPI.getById(id);
 export const createCatalogue = (data: any) => catalogueAPI.create(data);

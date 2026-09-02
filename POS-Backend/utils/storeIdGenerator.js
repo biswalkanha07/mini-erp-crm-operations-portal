@@ -1,39 +1,24 @@
-const Store = require('../models/Store');
+const { query } = require('../db/index');
 
 /**
  * Generates the next storeId in the format STORE0001, STORE0002, etc.
+ * Queries PostgreSQL stores table.
  * @returns {Promise<string>} The next available storeId
- * @throws {Error} If unable to generate storeId
  */
 const generateNextStoreId = async () => {
   try {
-    // Find the store with the highest storeId
-    const lastStore = await Store.findOne(
-      { storeId: { $regex: /^STORE\d{4}$/ } },
-      { storeId: 1 },
-      { sort: { storeId: -1 } }
-    );
+    const res = await query("SELECT store_id FROM stores WHERE store_id ~ '^STORE[0-9]{4}$' ORDER BY store_id DESC LIMIT 1");
 
     let nextNumber = 1;
-
-    if (lastStore) {
-      // Extract the number from the last storeId (e.g., "STORE0012" -> 12)
-      const lastNumber = parseInt(lastStore.storeId.replace('STORE', ''));
-      nextNumber = lastNumber + 1;
+    if (res.rows.length > 0) {
+      const lastId = res.rows[0].store_id;
+      const match = lastId.match(/STORE(\d+)/);
+      if (match) {
+        nextNumber = parseInt(match[1], 10) + 1;
+      }
     }
 
-    // Format the number with leading zeros (4 digits)
-    const formattedNumber = nextNumber.toString().padStart(4, '0');
-    const newStoreId = `STORE${formattedNumber}`;
-
-    // Double-check that this storeId doesn't already exist (race condition protection)
-    const existingStore = await Store.findOne({ storeId: newStoreId });
-    if (existingStore) {
-      // If it exists, recursively try the next number
-      return await generateNextStoreId();
-    }
-
-    return newStoreId;
+    return `STORE${nextNumber.toString().padStart(4, '0')}`;
   } catch (error) {
     console.error('Error generating next storeId:', error);
     throw new Error('Failed to generate storeId');

@@ -1,12 +1,8 @@
-const Organization = require('../models/Organization');
+const organizationService = require('../services/organizationService');
 
 exports.createOrganization = async (req, res) => {
   try {
-    const orgData = { ...req.body };
-    // Use organizationId as the _id
-    orgData._id = orgData.organizationId;
-    const org = new Organization(orgData);
-    await org.save();
+    const org = await organizationService.create(req.body);
     res.status(201).json(org);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -15,17 +11,16 @@ exports.createOrganization = async (req, res) => {
 
 exports.getAllOrganizations = async (req, res) => {
   try {
-    const orgs = await Organization.find().sort({ createdAt: -1 });
+    const orgs = await organizationService.getAll();
     res.json(orgs);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-
 exports.getOrganizationById = async (req, res) => {
   try {
-    const org = await Organization.findById(req.params.id);
+    const org = await organizationService.getById(req.params.id);
     if (!org) return res.status(404).json({ error: 'Not found' });
     res.json(org);
   } catch (err) {
@@ -35,23 +30,17 @@ exports.getOrganizationById = async (req, res) => {
 
 exports.updateOrganizationById = async (req, res) => {
   try {
-    // console.log('updateOrganizationById called with:', { id: req.params.id, body: req.body });
-    const org = await Organization.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!org) {
-      // console.log('Organization not found with id:', req.params.id);
-      return res.status(404).json({ error: 'Not found' });
-    }
-    // console.log('Organization updated successfully:', org);
+    const org = await organizationService.update(req.params.id, req.body);
+    if (!org) return res.status(404).json({ error: 'Not found' });
     res.json(org);
   } catch (err) {
-    // console.error('Error updating organization:', err);
     res.status(400).json({ error: err.message });
   }
 };
 
 exports.deleteOrganizationById = async (req, res) => {
   try {
-    const org = await Organization.findByIdAndDelete(req.params.id);
+    const org = await organizationService.delete(req.params.id);
     if (!org) return res.status(404).json({ error: 'Not found' });
     res.json({ message: 'Deleted' });
   } catch (err) {

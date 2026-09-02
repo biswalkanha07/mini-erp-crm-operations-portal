@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { authAPI } from '../api';
 import SignupSelector from './SignupSelector';
 import ForgotPassword from './ForgotPassword';
+import { ErpLogoIcon } from './common/ErpLogo';
+import { FiMail, FiLock, FiAlertCircle } from 'react-icons/fi';
 
 interface LoginSelectorProps {
   onLogin: (user: any, token: string) => void;
@@ -9,108 +11,48 @@ interface LoginSelectorProps {
 
 const LoginSelector: React.FC<LoginSelectorProps> = ({ onLogin }) => {
   const [email, setEmail] = useState('');
-  const [idOrCode, setIdOrCode] = useState(''); // Organization Code or Store ID
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'error'>('checking');
   const [fieldErrors, setFieldErrors] = useState({
-    idOrCode: '',
     email: '',
     password: ''
   });
 
-  // Test backend connection on component mount
-  // React.useEffect(() => {
-  //   const testConnection = async () => {
-  //     try {
-  //       const response = await fetch('http://localhost:5000/api/auth/profile', {
-  //         method: 'GET',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //       });
-  //       if (response.status === 401) {
-  //         // 401 is expected without token, means server is running
-  //         setConnectionStatus('connected');
-  //       } else {
-  //         setConnectionStatus('connected');
-  //       }
-  //     } catch (error) {
-  //       console.error('Backend connection test failed:', error);
-  //       setConnectionStatus('error');
-  //     }
-  //   };
-  //   testConnection();
-  // }, []);
-
-  // Function to validate form
   const validateForm = () => {
     setError('');
-    setFieldErrors({
-      idOrCode: '',
-      email: '',
-      password: ''
-    });
-
-    let isValid = true;
     const newFieldErrors = {
-      idOrCode: '',
       email: '',
       password: ''
-    } as any;
+    };
+    let isValid = true;
 
-    // Require either Organization Code or Store ID
-    if (!idOrCode.trim()) {
-      newFieldErrors.idOrCode = 'Organization Code or Store ID is required';
-      isValid = false;
-    }
-
-    // Check email
     if (!email.trim()) {
-      newFieldErrors.email = 'Email is required';
+      newFieldErrors.email = 'Email address is required';
       isValid = false;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newFieldErrors.email = 'Please enter a valid email address';
       isValid = false;
     }
 
-    // Check password
     if (!password.trim()) {
       newFieldErrors.password = 'Password is required';
       isValid = false;
     }
 
     setFieldErrors(newFieldErrors);
-    
-    if (!isValid) {
-      setError('Please fix the errors below to continue');
-    }
-    
     return isValid;
   };
 
-  // Function to handle input changes
-  const handleInputChange = (field: 'email' | 'password' | 'idOrCode', value: string) => {
-    if (field === 'email') {
-      setEmail(value);
-    } else if (field === 'password') {
-      setPassword(value);
-    } else if (field === 'idOrCode') {
-      setIdOrCode(value);
-    }
+  const handleInputChange = (field: 'email' | 'password', value: string) => {
+    if (field === 'email') setEmail(value);
+    if (field === 'password') setPassword(value);
 
-    // Clear field error when user starts typing
-    if ((fieldErrors as any)[field]) {
-      setFieldErrors(prev => ({
-        ...prev,
-        [field]: ''
-      }));
+    if (fieldErrors[field]) {
+      setFieldErrors(prev => ({ ...prev, [field]: '' }));
     }
-
-    // Clear general error when user starts typing
     if (error) {
       setError('');
     }
@@ -127,57 +69,48 @@ const LoginSelector: React.FC<LoginSelectorProps> = ({ onLogin }) => {
     setLoading(true);
 
     try {
-      // Try organization login first; if it fails, fallback to store login
-      let token: string | undefined;
-      let user: any | undefined;
+      const response = await authAPI.login({
+        email: email.trim().toLowerCase(),
+        password
+      });
 
-      try {
-        const orgResp = await authAPI.organizationLogin({ organizationId: idOrCode, email, password });
-        token = orgResp.data.token;
-        user = orgResp.data.user;
-      } catch (orgErr: any) {
-        // Fallback to store login
-        const storeResp = await authAPI.storeLogin({ storeId: idOrCode, email, password });
-        token = storeResp.data.token;
-        user = storeResp.data.user;
-      }
+      const data = response.data?.data || response.data;
+      const token = data?.token;
+      const user = data?.user;
 
       if (!token || !user) {
-        throw new Error('Invalid login response: missing token or user data');
+        throw new Error('Invalid authentication response');
       }
 
       localStorage.setItem('token', token);
       onLogin(user, token);
     } catch (err: any) {
       console.error('Login error:', err);
-      console.error('Error response:', err.response);
-      
-      let errorMessage = 'Login failed';
-      if (err.response?.data?.error) {
-        errorMessage = err.response.data.error;
-      } else if (err.response?.data?.message) {
+      let errorMessage = 'Invalid email or password';
+      if (err.response?.data?.message) {
         errorMessage = err.response.data.message;
+      } else if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
       } else if (err.message) {
         errorMessage = err.message;
       }
-      
       setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  // Show signup component if signup is selected
   if (showSignup) {
     return <SignupSelector onBackToLogin={() => setShowSignup(false)} />;
   }
 
-  // Show forgot password component if forgot password is selected
   if (showForgotPassword) {
-    return <ForgotPassword 
-      onBackToLogin={() => setShowForgotPassword(false)} 
-      onRedirectToReset={() => {}} // Not used in proper email flow
-    />;
+    return (
+      <ForgotPassword 
+        onBackToLogin={() => setShowForgotPassword(false)} 
+        onRedirectToReset={() => {}}
+      />
+    );
   }
 
   return (
@@ -186,304 +119,319 @@ const LoginSelector: React.FC<LoginSelectorProps> = ({ onLogin }) => {
       justifyContent: 'center', 
       alignItems: 'center', 
       minHeight: '100vh', 
-      background: 'linear-gradient(135deg, #1a2c7fff 0%, #0a174e 100%)',
-      fontFamily: 'Arial, sans-serif'
+      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0a174e 100%)',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      padding: '24px 16px',
+      boxSizing: 'border-box'
     }}>
       <div style={{ 
-        background: '#fff', 
-        padding: '40px', 
-        borderRadius: '16px', 
-        boxShadow: '0 20px 40px rgba(0,0,0,0.1)', 
-        maxWidth: '450px', 
+        background: '#ffffff', 
+        padding: '44px 36px', 
+        borderRadius: '20px', 
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', 
+        maxWidth: '460px', 
         width: '100%',
-        margin: '20px'
+        boxSizing: 'border-box'
       }}>
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            marginBottom: '15px' 
-          }}>
-            <div style={{ 
-              width: '50px', 
-              height: '50px', 
-              background: 'linear-gradient(45deg, #e53e3e, #38a169)', 
-              borderRadius: '50%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              marginRight: '15px'
-            }}>
-              <span style={{ fontSize: '24px' }}>🐔</span>
-            </div>
-            <div>
-              <h1 style={{ 
-                fontSize: '24px', 
-                fontWeight: '700', 
-                color: '#e53e3e', 
-                margin: '0',
-                lineHeight: '1.2'
-              }}>
-                SUGUNA CHICKEN
-              </h1>
-              <p style={{ 
-                fontSize: '12px', 
-                color: '#38a169', 
-                margin: '0',
-                fontWeight: '600'
-              }}>
-                Safer • Tender • Makes you stronger
-              </p>
-            </div>
+        {/* Portal Branding Header with ERP Logo */}
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}>
+            <ErpLogoIcon size={56} />
           </div>
-          <p style={{ color: '#666', fontSize: '16px' }}>
-            Sign in to your account
+          
+          <h1 style={{ 
+            fontSize: '24px', 
+            fontWeight: '800', 
+            color: '#0f172a', 
+            margin: '0 0 4px 0',
+            letterSpacing: '-0.5px'
+          }}>
+            ERP&CRM portal
+          </h1>
+          
+          <div style={{ 
+            fontSize: '14px', 
+            fontWeight: '700', 
+            color: '#2563eb', 
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            marginBottom: '8px'
+          }}>
+            Operations Portal
+          </div>
+
+          <p style={{ 
+            fontSize: '13px', 
+            color: '#64748b', 
+            margin: '0 auto',
+            lineHeight: '1.5',
+            maxWidth: '360px'
+          }}>
+            Wholesale & Distribution Management System
           </p>
         </div>
 
-        {/* Login Form */}
-        <form onSubmit={handleSubmit}>
-          {/* Unified ID field */}
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '8px', 
-              fontWeight: '600', 
-              color: '#333',
-              fontSize: '14px'
-            }}>
-              Organization Code or Store ID
-              <span style={{ color: '#dc2626', marginLeft: '4px' }}>*</span>
-            </label>
-            <input
-              type="text"
-              value={idOrCode}
-              onChange={(e) => handleInputChange('idOrCode', e.target.value)}
-              placeholder={'Enter Organization Code or Store ID'}
-              style={{ 
-                width: '100%', 
-                padding: '14px 16px', 
-                border: fieldErrors.idOrCode ? '2px solid #dc2626' : '2px solid #e1e5e9', 
-                borderRadius: '8px', 
-                fontSize: '16px',
-                transition: 'border-color 0.2s ease',
-                boxSizing: 'border-box'
-              }}
-              onFocus={(e) => e.target.style.borderColor = fieldErrors.idOrCode ? '#dc2626' : '#6c3fc5'}
-              onBlur={(e) => e.target.style.borderColor = fieldErrors.idOrCode ? '#dc2626' : '#e1e5e9'}
-            />
-            {fieldErrors.idOrCode && (
-              <div style={{ 
-                fontSize: '12px', 
-                color: '#dc2626', 
-                marginTop: '4px',
-                fontWeight: '500',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}>
-                ⚠️ {fieldErrors.idOrCode}
-              </div>
-            )}
+        {/* Quick Test Accounts Selector (All 4 roles under Admin) */}
+        <div style={{
+          background: '#f8fafc',
+          border: '1px solid #e2e8f0',
+          borderRadius: '14px',
+          padding: '12px 14px',
+          marginBottom: '20px',
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '8px'
+          }}>
+            <span style={{ fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+              Test Accounts (Org ORG001)
+            </span>
+            <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '500' }}>
+              Pass: <code style={{ color: '#2563eb', fontWeight: '600' }}>password123</code>
+            </span>
           </div>
 
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+            {[
+              { label: 'Admin', email: 'admin@test.com', bg: '#fee2e2', border: '#fca5a5', color: '#991b1b' },
+              { label: 'Sales', email: 'sales@test.com', bg: '#dbeafe', border: '#93c5fd', color: '#1e40af' },
+              { label: 'Warehouse', email: 'warehouse@test.com', bg: '#fef3c7', border: '#fcd34d', color: '#92400e' },
+              { label: 'Accounts', email: 'accounts@test.com', bg: '#dcfce7', border: '#86efac', color: '#166534' }
+            ].map(acc => (
+              <button
+                key={acc.label}
+                type="button"
+                onClick={() => {
+                  setEmail(acc.email);
+                  setPassword('password123');
+                  setFieldErrors({ email: '', password: '' });
+                  setError('');
+                }}
+                style={{
+                  padding: '7px 4px',
+                  background: email === acc.email ? acc.bg : '#ffffff',
+                  border: `1.5px solid ${email === acc.email ? acc.border : '#e2e8f0'}`,
+                  color: email === acc.email ? acc.color : '#475569',
+                  borderRadius: '8px',
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  transition: 'all 0.15s ease'
+                }}
+                title={`Click to fill ${acc.email} / password123`}
+              >
+                {acc.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Login Form */}
+        <form onSubmit={handleSubmit} noValidate>
+          {/* Email Address Field */}
           <div style={{ marginBottom: '20px' }}>
             <label style={{ 
               display: 'block', 
-              marginBottom: '8px', 
+              marginBottom: '6px', 
               fontWeight: '600', 
-              color: '#333',
-              fontSize: '14px'
+              color: '#334155',
+              fontSize: '13px'
             }}>
               Email Address
-              <span style={{ color: '#dc2626', marginLeft: '4px' }}>*</span>
             </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-              placeholder="Enter your email"
-              style={{ 
-                width: '100%', 
-                padding: '14px 16px', 
-                border: fieldErrors.email ? '2px solid #dc2626' : '2px solid #e1e5e9', 
-                borderRadius: '8px', 
-                fontSize: '16px',
-                transition: 'border-color 0.2s ease',
-                boxSizing: 'border-box'
-              }}
-              onFocus={(e) => e.target.style.borderColor = fieldErrors.email ? '#dc2626' : '#6c3fc5'}
-              onBlur={(e) => e.target.style.borderColor = fieldErrors.email ? '#dc2626' : '#e1e5e9'}
-            />
+            <div style={{ position: 'relative' }}>
+              <span style={{
+                position: 'absolute',
+                left: '14px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#94a3b8',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                <FiMail size={16} />
+              </span>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                placeholder="name@company.com"
+                autoComplete="email"
+                style={{ 
+                  width: '100%', 
+                  padding: '12px 14px 12px 38px', 
+                  border: fieldErrors.email ? '1.5px solid #ef4444' : '1.5px solid #cbd5e1', 
+                  borderRadius: '10px', 
+                  fontSize: '14px',
+                  color: '#0f172a',
+                  outline: 'none',
+                  transition: 'all 0.2s ease',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.target.style.borderColor = fieldErrors.email ? '#ef4444' : '#2563eb'}
+                onBlur={(e) => e.target.style.borderColor = fieldErrors.email ? '#ef4444' : '#cbd5e1'}
+              />
+            </div>
             {fieldErrors.email && (
               <div style={{ 
                 fontSize: '12px', 
-                color: '#dc2626', 
-                marginTop: '4px',
+                color: '#ef4444', 
+                marginTop: '5px',
                 fontWeight: '500',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px'
               }}>
-                ⚠️ {fieldErrors.email}
+                <FiAlertCircle size={13} /> {fieldErrors.email}
               </div>
             )}
           </div>
 
-          <div style={{ marginBottom: '25px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '8px', 
-              fontWeight: '600', 
-              color: '#333',
-              fontSize: '14px'
-            }}>
-              Password
-              <span style={{ color: '#dc2626', marginLeft: '4px' }}>*</span>
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => handleInputChange('password', e.target.value)}
-              placeholder="Enter your password"
-              style={{ 
-                width: '100%', 
-                padding: '14px 16px', 
-                border: fieldErrors.password ? '2px solid #dc2626' : '2px solid #e1e5e9', 
-                borderRadius: '8px', 
-                fontSize: '16px',
-                transition: 'border-color 0.2s ease',
-                boxSizing: 'border-box'
-              }}
-              onFocus={(e) => e.target.style.borderColor = fieldErrors.password ? '#dc2626' : '#6c3fc5'}
-              onBlur={(e) => e.target.style.borderColor = fieldErrors.password ? '#dc2626' : '#e1e5e9'}
-            />
+          {/* Password Field */}
+          <div style={{ marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+              <label style={{ 
+                fontWeight: '600', 
+                color: '#334155',
+                fontSize: '13px'
+              }}>
+                Password
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#2563eb',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  padding: 0
+                }}
+              >
+                Forgot password?
+              </button>
+            </div>
+            <div style={{ position: 'relative' }}>
+              <span style={{
+                position: 'absolute',
+                left: '14px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#94a3b8',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                <FiLock size={16} />
+              </span>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => handleInputChange('password', e.target.value)}
+                placeholder="••••••••"
+                autoComplete="current-password"
+                style={{ 
+                  width: '100%', 
+                  padding: '12px 14px 12px 38px', 
+                  border: fieldErrors.password ? '1.5px solid #ef4444' : '1.5px solid #cbd5e1', 
+                  borderRadius: '10px', 
+                  fontSize: '14px',
+                  color: '#0f172a',
+                  outline: 'none',
+                  transition: 'all 0.2s ease',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.target.style.borderColor = fieldErrors.password ? '#ef4444' : '#2563eb'}
+                onBlur={(e) => e.target.style.borderColor = fieldErrors.password ? '#ef4444' : '#cbd5e1'}
+              />
+            </div>
             {fieldErrors.password && (
               <div style={{ 
                 fontSize: '12px', 
-                color: '#dc2626', 
-                marginTop: '4px',
+                color: '#ef4444', 
+                marginTop: '5px',
                 fontWeight: '500',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px'
               }}>
-                ⚠️ {fieldErrors.password}
+                <FiAlertCircle size={13} /> {fieldErrors.password}
               </div>
             )}
           </div>
 
+          {/* Error Message */}
           {error && (
             <div style={{ 
               background: '#fef2f2', 
-              border: '1px solid #fecaca',
+              border: '1px solid #fee2e2',
               color: '#dc2626', 
-              padding: '12px 16px', 
-              borderRadius: '8px', 
+              padding: '12px 14px', 
+              borderRadius: '10px', 
               marginBottom: '20px',
-              fontSize: '14px',
-              textAlign: 'center',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
               fontWeight: '500'
             }}>
-              ⚠️ {error}
+              <FiAlertCircle size={16} style={{ flexShrink: 0 }} />
+              <span>{error}</span>
             </div>
           )}
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
             style={{
               width: '100%',
-              padding: '16px',
-              background: loading ? '#ccc' : '#1a2c7fff',
-              color: '#fff',
+              padding: '13px',
+              background: loading ? '#94a3b8' : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+              color: '#ffffff',
               border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
+              borderRadius: '10px',
+              fontSize: '14px',
               fontWeight: '600',
               cursor: loading ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s ease',
-              marginBottom: '15px'
+              boxShadow: loading ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.25)'
             }}
           >
-            {loading ? 'Signing In...' : 'Sign In'}
+            {loading ? 'Authenticating...' : 'Sign In to Operations Portal'}
           </button>
         </form>
 
-        {/* Forgot Password Link */}
-        <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-          <button
-            type="button"
-            onClick={() => setShowForgotPassword(true)}
-            style={{
-              background: 'transparent',
-              color: '#1a2c7fff',
-              border: 'none',
-              fontSize: '14px',
-              cursor: 'pointer',
-              textDecoration: 'underline',
-              fontWeight: '500'
-            }}
-          >
-            Forgot your password?
-          </button>
-        </div>
-
-        {/* Signup Link */}
-        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <span style={{ color: '#666', fontSize: '14px' }}>
-            Don't have an account?{' '}
+        {/* First Time Organization Setup / Register Link */}
+        <div style={{ 
+          marginTop: '28px', 
+          paddingTop: '20px', 
+          borderTop: '1px solid #f1f5f9', 
+          textAlign: 'center' 
+        }}>
+          <span style={{ color: '#64748b', fontSize: '13px' }}>
+            Need an initial setup?{' '}
           </span>
           <button
             type="button"
             onClick={() => setShowSignup(true)}
             style={{
               background: 'transparent',
-              color: '#1a2c7fff',
+              color: '#2563eb',
               border: 'none',
-              fontSize: '14px',
+              fontSize: '13px',
               cursor: 'pointer',
-              textDecoration: 'underline',
-              fontWeight: '600'
+              fontWeight: '600',
+              padding: 0
             }}
           >
-            Sign up here
+            Create Initial Admin Account
           </button>
         </div>
-
-        {/* Demo Credentials */}
-        {/* <div style={{ 
-          background: '#f8f9fa', 
-          padding: '16px', 
-          borderRadius: '8px', 
-          fontSize: '13px',
-          color: '#666'
-        }}> */}
-          {/* <div style={{ fontWeight: '600', marginBottom: '8px', color: '#333' }}>
-            Demo Credentials:
-          </div> */}
-          {/* <div style={{ marginBottom: '4px' }}>
-            <strong>Organization Admin:</strong> admin@pos.com / admin123
-          </div>
-          <div>
-            <strong>Store User:</strong> store@pos.com / store123
-          </div> */}
-          {/* <div style={{ 
-            marginTop: '8px', 
-            padding: '8px', 
-            background: '#e6fffa', 
-            borderRadius: '4px',
-            fontSize: '12px',
-            color: '#38a169'
-          }}>
-            <strong>Demo Barcodes:</strong><br/>
-            123456789012 - Whole Chicken<br/>
-            123456789013 - Chicken Breast<br/>
-            123456789014 - Chicken Legs
-          </div> */}
-        {/* </div> */}
       </div>
     </div>
   );

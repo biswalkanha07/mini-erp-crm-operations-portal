@@ -307,34 +307,38 @@ const SignupForm: React.FC<SignupFormProps> = ({ signupType, onBackToLogin, onBa
           marginBottom: '15px' 
         }}>
           <div style={{ 
-            width: '50px', 
-            height: '50px', 
-            background: 'linear-gradient(45deg, #e53e3e, #38a169)', 
-            borderRadius: '50%', 
+            width: '46px', 
+            height: '46px', 
+            background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)', 
+            borderRadius: '12px', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            marginRight: '15px'
+            marginRight: '12px',
+            color: '#fff',
+            fontSize: '20px',
+            fontWeight: '700'
           }}>
-            <span style={{ fontSize: '24px' }}>🐔</span>
+            ERP
           </div>
-          <div>
+          <div style={{ textAlign: 'left' }}>
             <h1 style={{ 
-              fontSize: '24px', 
+              fontSize: '20px', 
               fontWeight: '700', 
-              color: '#e53e3e', 
+              color: '#0f172a', 
               margin: '0',
               lineHeight: '1.2'
             }}>
-              SUGUNA CHICKEN
+              ERP&CRM portal
             </h1>
             <p style={{ 
               fontSize: '12px', 
-              color: '#38a169', 
+              color: '#2563eb', 
               margin: '0',
-              fontWeight: '600'
+              fontWeight: '600',
+              textTransform: 'uppercase'
             }}>
-              Safer • Tender • Makes you stronger
+              Operations Portal
             </p>
           </div>
         </div>

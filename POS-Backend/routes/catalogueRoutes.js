@@ -3,21 +3,27 @@ const router = express.Router();
 const catalogueController = require('../controllers/catalogueController');
 const upload = require('../middleware/upload');
 const auth = require('../middleware/auth');
+const { requireRole } = require('../middleware/rbac');
 
-// Accept legacy single image/thumbnail and new multiple images
-router.post('/', auth, upload.fields([
+// Read products / catalogues - available to all authenticated roles
+router.get('/search', auth, catalogueController.searchAndFilterCatalogues);
+router.get('/', auth, catalogueController.getAllCatalogues);
+router.get('/:id', auth, catalogueController.getCatalogueById);
+
+// Create / Update products - restricted to Admin and Warehouse
+router.post('/', auth, requireRole('Admin', 'Warehouse'), upload.fields([
   { name: 'image', maxCount: 1 },
   { name: 'thumbnail', maxCount: 1 },
   { name: 'images', maxCount: 10 }
 ]), catalogueController.createCatalogue);
-router.get('/search', catalogueController.searchAndFilterCatalogues);
-router.get('/', catalogueController.getAllCatalogues);
-router.get('/:id', catalogueController.getCatalogueById);
-router.put('/:id', auth, upload.fields([
+
+router.put('/:id', auth, requireRole('Admin', 'Warehouse'), upload.fields([
   { name: 'image', maxCount: 1 },
   { name: 'thumbnail', maxCount: 1 },
   { name: 'images', maxCount: 10 }
 ]), catalogueController.updateCatalogueById);
-router.delete('/:id', catalogueController.deleteCatalogueById);
+
+// Delete products - restricted to Admin
+router.delete('/:id', auth, requireRole('Admin'), catalogueController.deleteCatalogueById);
 
 module.exports = router;

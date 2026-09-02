@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const bulkUploadController = require('../controllers/bulkUploadController');
 const auth = require('../middleware/auth');
+const { requireRole } = require('../middleware/rbac');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -29,10 +30,10 @@ const upload = multer({
   }
 });
 
-// Bulk upload stores
-router.post('/stores/bulk-upload', auth, upload.single('csvFile'), bulkUploadController.bulkUploadStores);
+// Bulk upload stores - restricted to Admin
+router.post('/stores/bulk-upload', auth, requireRole('Admin'), upload.single('csvFile'), bulkUploadController.bulkUploadStores);
 
-// Download template
-router.get('/stores/template', auth, bulkUploadController.downloadTemplate);
+// Download template - restricted to Admin
+router.get('/stores/template', auth, requireRole('Admin'), bulkUploadController.downloadTemplate);
 
 module.exports = router;

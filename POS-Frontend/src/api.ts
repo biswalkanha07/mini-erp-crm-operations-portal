@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-// const API_BASE = 'http://localhost:5050/api';
-const API_BASE = 'https://apis.pos.hutechsolutions.in/api';
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5050/api';
 
 // Create axios instance with default config
  export const api = axios.create({
@@ -38,6 +37,7 @@ export const authAPI = {
   login: (data: { email: string; password: string }) => api.post('/auth/login', data),
   
   // Signup endpoints
+  registerAdmin: (data: { name: string; organizationName: string; email: string; password: string }) => api.post('/auth/register-admin', data),
   organizationSignup: (data: { organizationId: string; email: string; password: string }) => api.post('/auth/organization/signup', data),
   storeSignup: (data: { storeId: string; email: string; password: string; token?: string }) => api.post('/auth/store/signup', data),
   verifyStoreSignupToken: (data: { email: string; storeId: string; token: string }) => api.post('/auth/store/verify-signup-token', data),

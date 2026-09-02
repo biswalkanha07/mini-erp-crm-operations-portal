@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { authAPI } from '../api';
+import { ErpLogoIcon } from './common/ErpLogo';
 
 interface ResetPasswordProps {
   token: string;
@@ -366,43 +367,27 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ token, onSuccess }) => {
       }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            marginBottom: '15px' 
+          <div style={{ marginBottom: '14px', display: 'flex', justifyContent: 'center' }}>
+            <ErpLogoIcon size={54} />
+          </div>
+          <h1 style={{ 
+            fontSize: '22px', 
+            fontWeight: '800', 
+            color: '#0f172a', 
+            margin: '0 0 4px 0',
+            letterSpacing: '-0.5px'
           }}>
-            <div style={{ 
-              width: '50px', 
-              height: '50px', 
-              background: 'linear-gradient(45deg, #e53e3e, #38a169)', 
-              borderRadius: '50%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              marginRight: '15px'
-            }}>
-              <span style={{ fontSize: '24px' }}>🐔</span>
-            </div>
-            <div>
-              <h1 style={{ 
-                fontSize: '24px', 
-                fontWeight: '700', 
-                color: '#e53e3e', 
-                margin: '0',
-                lineHeight: '1.2'
-              }}>
-                SUGUNA CHICKEN
-              </h1>
-              <p style={{ 
-                fontSize: '12px', 
-                color: '#38a169', 
-                margin: '0',
-                fontWeight: '600'
-              }}>
-                Safer • Tender • Makes you stronger
-              </p>
-            </div>
+            ERP&CRM portal
+          </h1>
+          <div style={{ 
+            fontSize: '13px', 
+            fontWeight: '700', 
+            color: '#2563eb', 
+            margin: '0 0 10px 0',
+            textTransform: 'uppercase',
+            letterSpacing: '1px'
+          }}>
+            Operations Portal
           </div>
           <h2 style={{ 
             color: '#333', 

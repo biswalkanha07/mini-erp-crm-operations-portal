@@ -21,6 +21,8 @@ const initialState: Catalogue = {
   certificationImage: '',
   price: 0,
   stock: 0,
+  minimumStock: 0,
+  warehouseLocation: 'Main Warehouse',
   barcode: '',
   status: 'active',
   image: '',
@@ -464,7 +466,15 @@ const AddCataloguePage: React.FC<AddCataloguePageProps> = ({ onBack, editId, edi
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <label>Stock</label>
-                    <input name="stock" type="number" value={form.stock || ''} onChange={handleChange} min="0" className="uniform-input" style={{ padding: 10, borderRadius: 6, border: '1px solid #ccc', marginTop: 4 }} />
+                    <input name="stock" type="number" value={form.stock ?? ''} onChange={handleChange} min="0" className="uniform-input" style={{ padding: 10, borderRadius: 6, border: '1px solid #ccc', marginTop: 4 }} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <label>Minimum Stock Alert Quantity</label>
+                    <input name="minimumStock" type="number" value={form.minimumStock ?? 0} onChange={handleChange} min="0" className="uniform-input" style={{ padding: 10, borderRadius: 6, border: '1px solid #ccc', marginTop: 4 }} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <label>Warehouse / Location</label>
+                    <input name="warehouseLocation" type="text" value={form.warehouseLocation || 'Main Warehouse'} onChange={handleChange} placeholder="e.g. Main Warehouse, Cold Storage B" className="uniform-input" style={{ padding: 10, borderRadius: 6, border: '1px solid #ccc', marginTop: 4 }} />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <label>Certification</label>

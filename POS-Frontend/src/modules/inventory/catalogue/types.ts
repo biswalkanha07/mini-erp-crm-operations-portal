@@ -10,6 +10,7 @@ export interface NutritionValue {
 
 export interface Catalogue {
   _id?: string;
+  id?: string;
   itemId: string;
   sku: string;
   itemName: string;
@@ -21,7 +22,15 @@ export interface Catalogue {
   cutType?: string; // Halal, Jhatka, Kosher, Standard Commercial, Free-range
   certificationImage?: string; // base64 data URL or URL
   price: number;
+  unitPrice?: number;
   stock: number;
+  currentStock?: number;
+  minimumStock?: number;
+  warehouseLocation?: string;
+  categoryName?: string;
+  lowStock?: boolean;
+  isLowStock?: boolean;
+  productName?: string;
   barcode?: string;
   status: 'active' | 'inactive';
   // Legacy single image

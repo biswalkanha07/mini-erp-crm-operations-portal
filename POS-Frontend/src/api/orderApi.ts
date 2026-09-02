@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-// const API_BASE = 'http://localhost:5050/api';
-const API_BASE = 'https://apis.pos.hutechsolutions.in/api';
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5050/api';
 
 const api = axios.create({
   baseURL: API_BASE,

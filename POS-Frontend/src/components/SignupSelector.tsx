@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import SignupForm from './SignupForm';
+import { authAPI } from '../api';
+import { ErpLogoIcon } from './common/ErpLogo';
+import { FiUser, FiBriefcase, FiMail, FiLock, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
 
 interface SignupSelectorProps {
   onBackToLogin: () => void;
@@ -8,28 +10,106 @@ interface SignupSelectorProps {
   token?: string | null;
 }
 
-const SignupSelector: React.FC<SignupSelectorProps> = ({ onBackToLogin, storeId, email, token }) => {
-  const [signupType, setSignupType] = useState<'organization' | 'store' | null>(null);
+const SignupSelector: React.FC<SignupSelectorProps> = ({ onBackToLogin }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    organizationName: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  // Auto-select store signup if storeId is provided
-  React.useEffect(() => {
-    if (storeId) {
-      setSignupType('store');
+  const validateForm = () => {
+    setError('');
+    const errors: Record<string, string> = {};
+    let isValid = true;
+
+    if (!formData.name.trim()) {
+      errors.name = 'Full name is required';
+      isValid = false;
     }
-  }, [storeId]);
 
-  if (signupType) {
-    return (
-      <SignupForm
-        signupType={signupType}
-        onBackToLogin={onBackToLogin}
-        onBackToSignupSelector={() => setSignupType(null)}
-        storeId={storeId}
-        emailFromLink={email}
-        tokenFromLink={token}
-      />
-    );
-  }
+    if (!formData.organizationName.trim()) {
+      errors.organizationName = 'Organization name is required';
+      isValid = false;
+    }
+
+    if (!formData.email.trim()) {
+      errors.email = 'Email address is required';
+      isValid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = 'Please enter a valid email address';
+      isValid = false;
+    }
+
+    if (!formData.password) {
+      errors.password = 'Password is required';
+      isValid = false;
+    } else if (formData.password.length < 6) {
+      errors.password = 'Password must be at least 6 characters';
+      isValid = false;
+    }
+
+    if (!formData.confirmPassword) {
+      errors.confirmPassword = 'Confirm your password';
+      isValid = false;
+    } else if (formData.password !== formData.confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match';
+      isValid = false;
+    }
+
+    setFieldErrors(errors);
+    return isValid;
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (fieldErrors[field]) {
+      setFieldErrors(prev => ({ ...prev, [field]: '' }));
+    }
+    if (error) {
+      setError('');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      await authAPI.registerAdmin({
+        name: formData.name.trim(),
+        organizationName: formData.organizationName.trim(),
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password
+      });
+
+      setSuccess(true);
+      setTimeout(() => {
+        onBackToLogin();
+      }, 2000);
+    } catch (err: any) {
+      console.error('Registration error:', err);
+      let msg = 'Failed to create initial admin account';
+      if (err.response?.data?.message) {
+        msg = err.response.data.message;
+      } else if (err.response?.data?.error) {
+        msg = err.response.data.error;
+      } else if (err.message) {
+        msg = err.message;
+      }
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div style={{ 
@@ -37,232 +117,308 @@ const SignupSelector: React.FC<SignupSelectorProps> = ({ onBackToLogin, storeId,
       justifyContent: 'center', 
       alignItems: 'center', 
       minHeight: '100vh', 
-      background: 'linear-gradient(135deg, #1a2c7fff 0%, #0a174e 100%)',
-      fontFamily: 'Arial, sans-serif',
-      padding: '20px'
+      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0a174e 100%)',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      padding: '24px 16px',
+      boxSizing: 'border-box'
     }}>
       <div style={{ 
-        background: '#fff', 
-        padding: '40px', 
-        borderRadius: '16px', 
-        boxShadow: '0 20px 40px rgba(0,0,0,0.1)', 
-        maxWidth: '600px', 
+        background: '#ffffff', 
+        padding: '40px 36px', 
+        borderRadius: '20px', 
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', 
+        maxWidth: '480px', 
         width: '100%',
-        margin: '0 auto'
+        boxSizing: 'border-box'
       }}>
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            marginBottom: '15px' 
-          }}>
-            <div style={{ 
-              width: '50px', 
-              height: '50px', 
-              background: 'linear-gradient(45deg, #e53e3e, #38a169)', 
-              borderRadius: '50%', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              marginRight: '15px'
-            }}>
-              <span style={{ fontSize: '24px' }}>🐔</span>
-            </div>
-            <div>
-              <h1 style={{ 
-                fontSize: '24px', 
-                fontWeight: '700', 
-                color: '#e53e3e', 
-                margin: '0',
-                lineHeight: '1.2'
-              }}>
-                SUGUNA CHICKEN
-              </h1>
-              <p style={{ 
-                fontSize: '12px', 
-                color: '#38a169', 
-                margin: '0',
-                fontWeight: '600'
-              }}>
-                Safer • Tender • Makes you stronger
-              </p>
-            </div>
+        {/* Header with ERP Logo */}
+        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+          <div style={{ marginBottom: '14px', display: 'flex', justifyContent: 'center' }}>
+            <ErpLogoIcon size={54} />
           </div>
-          <h2 style={{ 
-            color: '#333', 
-            fontSize: '20px', 
-            margin: '0 0 8px 0',
+
+          <h1 style={{ 
+            fontSize: '22px', 
+            fontWeight: '800', 
+            color: '#0f172a', 
+            margin: '0 0 4px 0',
+            letterSpacing: '-0.5px'
+          }}>
+            ERP&CRM portal
+          </h1>
+
+          <div style={{ 
+            fontSize: '13px', 
+            fontWeight: '700', 
+            color: '#2563eb', 
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            marginBottom: '10px'
+          }}>
+            Operations Portal
+          </div>
+
+          <div style={{
+            display: 'inline-block',
+            background: '#eff6ff',
+            color: '#1e40af',
+            border: '1px solid #dbeafe',
+            padding: '4px 12px',
+            borderRadius: '20px',
+            fontSize: '12px',
             fontWeight: '600'
           }}>
-            Create Account
-          </h2>
-          <p style={{ color: '#666', fontSize: '16px', margin: '0' }}>
-            Choose your account type
-          </p>
+            Create Initial Admin Account
+          </div>
         </div>
 
-        {/* Signup Type Selection */}
-        <div style={{ marginBottom: '30px' }}>
-          <div style={{ 
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '20px',
-            marginBottom: '20px'
+        {/* Success Alert */}
+        {success ? (
+          <div style={{
+            background: '#ecfdf5',
+            border: '1px solid #a7f3d0',
+            color: '#065f46',
+            padding: '20px',
+            borderRadius: '12px',
+            textAlign: 'center'
           }}>
+            <FiCheckCircle size={36} color="#10b981" style={{ marginBottom: '10px' }} />
+            <h3 style={{ margin: '0 0 6px 0', fontSize: '16px', fontWeight: '700' }}>Admin Account Created!</h3>
+            <p style={{ margin: 0, fontSize: '13px', color: '#047857' }}>
+              Redirecting to sign in screen...
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} noValidate>
+            {/* Full Name */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', color: '#334155', fontSize: '13px' }}>
+                Full Name
+              </label>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>
+                  <FiUser size={15} />
+                </span>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  placeholder="e.g. Rahul Sharma"
+                  style={{
+                    width: '100%',
+                    padding: '11px 14px 11px 38px',
+                    border: fieldErrors.name ? '1.5px solid #ef4444' : '1.5px solid #cbd5e1',
+                    borderRadius: '10px',
+                    fontSize: '14px',
+                    color: '#0f172a',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+              {fieldErrors.name && (
+                <div style={{ fontSize: '12px', color: '#ef4444', marginTop: '4px', fontWeight: '500' }}>
+                  {fieldErrors.name}
+                </div>
+              )}
+            </div>
+
+            {/* Organization Name */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', color: '#334155', fontSize: '13px' }}>
+                Organization Name
+              </label>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>
+                  <FiBriefcase size={15} />
+                </span>
+                <input
+                  type="text"
+                  value={formData.organizationName}
+                  onChange={(e) => handleInputChange('organizationName', e.target.value)}
+                  placeholder="e.g. Apex Wholesale Distributors"
+                  style={{
+                    width: '100%',
+                    padding: '11px 14px 11px 38px',
+                    border: fieldErrors.organizationName ? '1.5px solid #ef4444' : '1.5px solid #cbd5e1',
+                    borderRadius: '10px',
+                    fontSize: '14px',
+                    color: '#0f172a',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+              {fieldErrors.organizationName && (
+                <div style={{ fontSize: '12px', color: '#ef4444', marginTop: '4px', fontWeight: '500' }}>
+                  {fieldErrors.organizationName}
+                </div>
+              )}
+            </div>
+
+            {/* Email Address */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', color: '#334155', fontSize: '13px' }}>
+                Business Email Address
+              </label>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>
+                  <FiMail size={15} />
+                </span>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  placeholder="admin@company.com"
+                  style={{
+                    width: '100%',
+                    padding: '11px 14px 11px 38px',
+                    border: fieldErrors.email ? '1.5px solid #ef4444' : '1.5px solid #cbd5e1',
+                    borderRadius: '10px',
+                    fontSize: '14px',
+                    color: '#0f172a',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+              {fieldErrors.email && (
+                <div style={{ fontSize: '12px', color: '#ef4444', marginTop: '4px', fontWeight: '500' }}>
+                  {fieldErrors.email}
+                </div>
+              )}
+            </div>
+
+            {/* Password */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', color: '#334155', fontSize: '13px' }}>
+                Password
+              </label>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>
+                  <FiLock size={15} />
+                </span>
+                <input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  placeholder="••••••••"
+                  style={{
+                    width: '100%',
+                    padding: '11px 14px 11px 38px',
+                    border: fieldErrors.password ? '1.5px solid #ef4444' : '1.5px solid #cbd5e1',
+                    borderRadius: '10px',
+                    fontSize: '14px',
+                    color: '#0f172a',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+              {fieldErrors.password && (
+                <div style={{ fontSize: '12px', color: '#ef4444', marginTop: '4px', fontWeight: '500' }}>
+                  {fieldErrors.password}
+                </div>
+              )}
+            </div>
+
+            {/* Confirm Password */}
+            <div style={{ marginBottom: '22px' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', color: '#334155', fontSize: '13px' }}>
+                Confirm Password
+              </label>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>
+                  <FiLock size={15} />
+                </span>
+                <input
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                  placeholder="••••••••"
+                  style={{
+                    width: '100%',
+                    padding: '11px 14px 11px 38px',
+                    border: fieldErrors.confirmPassword ? '1.5px solid #ef4444' : '1.5px solid #cbd5e1',
+                    borderRadius: '10px',
+                    fontSize: '14px',
+                    color: '#0f172a',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+              {fieldErrors.confirmPassword && (
+                <div style={{ fontSize: '12px', color: '#ef4444', marginTop: '4px', fontWeight: '500' }}>
+                  {fieldErrors.confirmPassword}
+                </div>
+              )}
+            </div>
+
+            {/* General Error */}
+            {error && (
+              <div style={{
+                background: '#fef2f2',
+                border: '1px solid #fee2e2',
+                color: '#dc2626',
+                padding: '10px 14px',
+                borderRadius: '10px',
+                marginBottom: '18px',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontWeight: '500'
+              }}>
+                <FiAlertCircle size={16} style={{ flexShrink: 0 }} />
+                <span>{error}</span>
+              </div>
+            )}
+
+            {/* Submit Button */}
             <button
-              type="button"
-              onClick={() => setSignupType('organization')}
+              type="submit"
+              disabled={loading}
               style={{
                 width: '100%',
-                padding: '30px 25px',
-                background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-                color: '#fff',
+                padding: '13px',
+                background: loading ? '#94a3b8' : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                color: '#ffffff',
                 border: 'none',
-                borderRadius: '16px',
-                fontSize: '16px',
+                borderRadius: '10px',
+                fontSize: '14px',
                 fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                gap: '20px',
-                boxShadow: '0 6px 20px rgba(139, 92, 246, 0.3)',
-                textAlign: 'left'
-              }}
-              onMouseOver={(e) => {
-                const target = e.target as HTMLButtonElement;
-                target.style.transform = 'translateY(-3px)';
-                target.style.boxShadow = '0 8px 25px rgba(139, 92, 246, 0.4)';
-              }}
-              onMouseOut={(e) => {
-                const target = e.target as HTMLButtonElement;
-                target.style.transform = 'translateY(0)';
-                target.style.boxShadow = '0 6px 20px rgba(139, 92, 246, 0.3)';
+                cursor: loading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: loading ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.25)'
               }}
             >
-              <div style={{ 
-                width: '60px', 
-                height: '60px', 
-                background: 'rgba(255, 255, 255, 0.2)', 
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '28px',
-                flexShrink: 0
-              }}>
-                🏢
-              </div>
-              <div>
-                <div style={{ fontSize: '18px', fontWeight: '700', marginBottom: '6px' }}>Organization Admin</div>
-                <div style={{ fontSize: '14px', opacity: 0.9 }}>Manage multiple stores and oversee operations</div>
-              </div>
+              {loading ? 'Creating Account...' : 'Create Admin Account'}
             </button>
-
-            <button
-              type="button"
-              onClick={() => setSignupType('store')}
-              style={{
-                width: '100%',
-                padding: '30px 25px',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '16px',
-                fontSize: '16px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                gap: '20px',
-                boxShadow: '0 6px 20px rgba(16, 185, 129, 0.3)',
-                textAlign: 'left'
-              }}
-              onMouseOver={(e) => {
-                const target = e.target as HTMLButtonElement;
-                target.style.transform = 'translateY(-3px)';
-                target.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.4)';
-              }}
-              onMouseOut={(e) => {
-                const target = e.target as HTMLButtonElement;
-                target.style.transform = 'translateY(0)';
-                target.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.3)';
-              }}
-            >
-              <div style={{ 
-                width: '60px', 
-                height: '60px', 
-                background: 'rgba(255, 255, 255, 0.2)', 
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '28px',
-                flexShrink: 0
-              }}>
-                🏪
-              </div>
-              <div>
-                <div style={{ fontSize: '18px', fontWeight: '700', marginBottom: '6px' }}>Store User</div>
-                <div style={{ fontSize: '14px', opacity: 0.9 }}>Handle POS operations and daily sales</div>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Info Section */}
-        <div style={{ 
-          background: '#f8f9fa', 
-          padding: '16px', 
-          borderRadius: '8px', 
-          fontSize: '13px',
-          color: '#666',
-          marginBottom: '20px'
-        }}>
-          <div style={{ fontWeight: '600', marginBottom: '8px', color: '#333' }}>
-            Account Types:
-          </div>
-          <div style={{ marginBottom: '4px' }}>
-            <strong>Organization Admin:</strong> Full access to manage organizations, stores, inventory, and view reports
-          </div>
-          <div style={{ marginBottom: '8px' }}>
-            <strong>Store User:</strong> Access to POS interface for sales transactions
-          </div>
-          <div style={{ 
-            background: '#e6fffa', 
-            padding: '8px', 
-            borderRadius: '4px',
-            fontSize: '12px',
-            color: '#38a169',
-            marginTop: '8px'
-          }}>
-            <strong>Note:</strong> You'll need the Organization ID or Store ID provided by your administrator to create an account.
-          </div>
-        </div>
+          </form>
+        )}
 
         {/* Back to Login */}
-        <div style={{ textAlign: 'center' }}>
+        <div style={{ 
+          marginTop: '22px', 
+          paddingTop: '16px', 
+          borderTop: '1px solid #f1f5f9', 
+          textAlign: 'center' 
+        }}>
           <button
             type="button"
             onClick={onBackToLogin}
             style={{
               background: 'transparent',
-              color: '#6c3fc5',
+              color: '#2563eb',
               border: 'none',
-              fontSize: '14px',
+              fontSize: '13px',
               cursor: 'pointer',
-              textDecoration: 'underline',
-              padding: '8px'
+              fontWeight: '600',
+              padding: 0
             }}
           >
-            ← Back to Login
+            ← Back to Sign In
           </button>
         </div>
       </div>
@@ -271,3 +427,4 @@ const SignupSelector: React.FC<SignupSelectorProps> = ({ onBackToLogin, storeId,
 };
 
 export default SignupSelector;
+

@@ -1,24 +1,21 @@
 const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path');
-const Store = require('../models/Store');
-const User = require('../models/User');
-const Organization = require('../models/Organization');
-const { generateStoreId } = require('../utils/storeIdGenerator');
-const { sendEmail } = require('../utils/emailService');
+const storeService = require('../services/storeService');
 
 // Bulk upload stores from CSV
 exports.bulkUploadStores = async (req, res) => {
+  let csvPath = null;
   try {
     if (!req.file) {
-      return res.status(400).json({ 
-        success: false, 
+      return res.status(400).json({
+        success: false,
         message: 'No CSV file uploaded',
         errors: ['Please upload a CSV file']
       });
     }
 
-    const csvPath = req.file.path;
+    csvPath = req.file.path;
     const results = [];
     const errors = [];
     const createdStores = [];
@@ -34,6 +31,7 @@ exports.bulkUploadStores = async (req, res) => {
 
     // Validate CSV structure
     if (results.length === 0) {
+      if (fs.existsSync(csvPath)) fs.unlinkSync(csvPath);
       return res.status(400).json({
         success: false,
         message: 'CSV file is empty',
@@ -46,6 +44,7 @@ exports.bulkUploadStores = async (req, res) => {
     const missingFields = requiredFields.filter(field => !firstRow[field]);
 
     if (missingFields.length > 0) {
+      if (fs.existsSync(csvPath)) fs.unlinkSync(csvPath);
       return res.status(400).json({
         success: false,
         message: 'CSV file is missing required fields',
@@ -53,9 +52,9 @@ exports.bulkUploadStores = async (req, res) => {
       });
     }
 
-    // Get organization ID from the authenticated user
-    const organizationId = req.user.organizationId;
+    const organizationId = req.user ? req.user.organizationId : null;
     if (!organizationId) {
+      if (fs.existsSync(csvPath)) fs.unlinkSync(csvPath);
       return res.status(400).json({
         success: false,
         message: 'Organization ID not found',
@@ -63,45 +62,29 @@ exports.bulkUploadStores = async (req, res) => {
       });
     }
 
-    // Process each store
     for (let i = 0; i < results.length; i++) {
       const row = results[i];
-      const rowNumber = i + 2; // +2 because CSV is 1-indexed and we skip header
+      const rowNumber = i + 2;
 
       try {
-        // Validate required fields
         if (!row.storeName || !row.storeLocation || !row.contactPersonName || !row.contactNumber || !row.email) {
           errors.push(`Row ${rowNumber}: Missing required fields`);
           continue;
         }
 
-        // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(row.email)) {
+        if (!emailRegex.test(row.email.trim())) {
           errors.push(`Row ${rowNumber}: Invalid email format for ${row.email}`);
           continue;
         }
 
-        // Validate phone number (basic validation)
         const phoneRegex = /^[0-9]{10}$/;
         if (!phoneRegex.test(row.contactNumber.replace(/\D/g, ''))) {
           errors.push(`Row ${rowNumber}: Invalid phone number format for ${row.contactNumber}`);
           continue;
         }
 
-        // Check if store with same email already exists
-        const existingStore = await Store.findOne({ email: row.email });
-        if (existingStore) {
-          errors.push(`Row ${rowNumber}: Store with email ${row.email} already exists`);
-          continue;
-        }
-
-        // Generate store ID
-        const storeId = await generateStoreId();
-
-        // Create store
         const storeData = {
-          storeId,
           storeName: row.storeName.trim(),
           storeLocation: row.storeLocation.trim(),
           storeAddress: row.storeAddress ? row.storeAddress.trim() : '',
@@ -114,60 +97,8 @@ exports.bulkUploadStores = async (req, res) => {
           theme: row.theme && ['light', 'dark'].includes(row.theme.toLowerCase()) ? row.theme.toLowerCase() : 'light'
         };
 
-        const store = new Store(storeData);
-        await store.save();
-
-        // Create store user
-        const userData = {
-          name: row.contactPersonName.trim(),
-          email: row.email.trim().toLowerCase(),
-          password: 'TempPassword123!', // Temporary password
-          userType: 'store',
-          role: 'store_manager',
-          storeId: store._id,
-          organizationId,
-          status: 'pending' // User needs to set their password
-        };
-
-        const user = new User(userData);
-        await user.save();
-
-        // Generate signup token
-        const signupToken = require('crypto').randomBytes(32).toString('hex');
-        user.signupToken = signupToken;
-        user.signupTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-        await user.save();
-
-        // Send signup email
-        try {
-          const signupLink = `${process.env.FRONTEND_URL || 'https://pos.hutechsolutions.in'}/signup?token=${signupToken}&email=${encodeURIComponent(user.email)}&storeId=${store.storeId}`;
-          
-          await sendEmail({
-            to: user.email,
-            subject: 'Welcome to POS System - Complete Your Registration',
-            html: `
-              <h2>Welcome to POS System</h2>
-              <p>Hello ${user.name},</p>
-              <p>Your store "${store.storeName}" has been created successfully!</p>
-              <p>Please complete your registration by clicking the link below:</p>
-              <a href="${signupLink}" style="background: #7c4dff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Complete Registration</a>
-              <p>This link will expire in 24 hours.</p>
-              <p>If you have any questions, please contact support.</p>
-            `
-          });
-        } catch (emailError) {
-          console.error('Failed to send signup email:', emailError);
-          // Don't fail the store creation if email fails
-        }
-
-        createdStores.push({
-          storeId: store.storeId,
-          storeName: store.storeName,
-          storeLocation: store.storeLocation,
-          contactPersonName: store.contactPersonName,
-          email: store.email,
-          status: store.status
-        });
+        const result = await storeService.createStore(storeData);
+        createdStores.push(result.store);
 
       } catch (error) {
         console.error(`Error processing row ${rowNumber}:`, error);
@@ -175,10 +106,8 @@ exports.bulkUploadStores = async (req, res) => {
       }
     }
 
-    // Clean up uploaded file
-    fs.unlinkSync(csvPath);
+    if (fs.existsSync(csvPath)) fs.unlinkSync(csvPath);
 
-    // Return response
     if (createdStores.length === 0) {
       return res.status(400).json({
         success: false,
@@ -195,21 +124,12 @@ exports.bulkUploadStores = async (req, res) => {
     });
 
   } catch (error) {
+    if (csvPath && fs.existsSync(csvPath)) fs.unlinkSync(csvPath);
     console.error('Bulk upload error:', error);
-    
-    // Clean up uploaded file if it exists
-    if (req.file && req.file.path) {
-      try {
-        fs.unlinkSync(req.file.path);
-      } catch (cleanupError) {
-        console.error('Error cleaning up file:', cleanupError);
-      }
-    }
-
     res.status(500).json({
       success: false,
-      message: 'Bulk upload failed',
-      errors: ['Internal server error occurred']
+      message: 'Failed to process CSV file',
+      error: error.message
     });
   }
 };
@@ -217,22 +137,16 @@ exports.bulkUploadStores = async (req, res) => {
 // Download CSV template
 exports.downloadTemplate = (req, res) => {
   try {
-    const templatePath = path.join(__dirname, '../../public/store-template.csv');
-    
-    res.download(templatePath, 'store-template.csv', (err) => {
-      if (err) {
-        console.error('Error downloading template:', err);
-        res.status(404).json({ 
-          success: false, 
-          message: 'Template file not found' 
-        });
-      }
-    });
+    const headers = ['storeName', 'storeLocation', 'storeAddress', 'contactPersonName', 'contactNumber', 'email', 'discountRate', 'theme'];
+    const sampleData = [
+      'Downtown Branch,Downtown,123 Main St City,John Doe,9876543210,john@example.com,5,light',
+      'Uptown Branch,Uptown,456 Oak Ave City,Jane Smith,9876543211,jane@example.com,10,dark'
+    ];
+    const csvContent = [headers.join(','), ...sampleData].join('\n');
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=stores_template.csv');
+    res.send(csvContent);
   } catch (error) {
-    console.error('Template download error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to download template' 
-    });
+    res.status(500).json({ success: false, message: 'Failed to generate template', error: error.message });
   }
 };

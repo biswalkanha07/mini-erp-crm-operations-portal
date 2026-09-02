@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { authAPI } from '../api';
+import { ErpLogoIcon } from './common/ErpLogo';
+import { FiMail, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
 
 interface ForgotPasswordProps {
   onBackToLogin: () => void;
   onRedirectToReset: (token: string) => void;
 }
 
-const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin, onRedirectToReset }) => {
+const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin }) => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -15,21 +17,13 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin, onRedire
     email: ''
   });
 
-  // Function to validate form
   const validateForm = () => {
     setError('');
-    setFieldErrors({
-      email: ''
-    });
-
+    const newFieldErrors = { email: '' };
     let isValid = true;
-    const newFieldErrors = {
-      email: ''
-    };
 
-    // Check email
     if (!email.trim()) {
-      newFieldErrors.email = 'Email is required';
+      newFieldErrors.email = 'Email address is required';
       isValid = false;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newFieldErrors.email = 'Please enter a valid email address';
@@ -37,45 +31,24 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin, onRedire
     }
 
     setFieldErrors(newFieldErrors);
-    
-    if (!isValid) {
-      setError('Please fix the errors below to continue');
-    }
-    
     return isValid;
   };
 
-  // Function to handle input changes
   const handleInputChange = (value: string) => {
     setEmail(value);
-
-    // Clear field error when user starts typing
-    if (fieldErrors.email) {
-      setFieldErrors(prev => ({
-        ...prev,
-        email: ''
-      }));
-    }
-
-    // Clear general error when user starts typing
-    if (error) {
-      setError('');
-    }
+    if (fieldErrors.email) setFieldErrors({ email: '' });
+    if (error) setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (!validateForm()) {
-      return;
-    }
-
+    if (!validateForm()) return;
     setLoading(true);
 
     try {
       const response = await authAPI.forgotPassword({ email });
-      
       if (response.data.status === 'success') {
         setSuccess(true);
       } else {
@@ -95,46 +68,52 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin, onRedire
         justifyContent: 'center', 
         alignItems: 'center', 
         minHeight: '100vh', 
-        background: 'linear-gradient(135deg, #1a2c7fff 0%, #0a174e 100%)',
-        fontFamily: 'Arial, sans-serif',
-        padding: '20px'
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0a174e 100%)',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        padding: '24px 16px',
+        boxSizing: 'border-box'
       }}>
         <div style={{ 
           background: '#fff', 
-          padding: '40px', 
-          borderRadius: '16px', 
-          boxShadow: '0 20px 40px rgba(0,0,0,0.1)', 
-          maxWidth: '500px', 
+          padding: '40px 36px', 
+          borderRadius: '20px', 
+          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', 
+          maxWidth: '460px', 
           width: '100%',
-          margin: '0 auto',
-          textAlign: 'center'
+          textAlign: 'center',
+          boxSizing: 'border-box'
         }}>
+          <div style={{ marginBottom: '14px', display: 'flex', justifyContent: 'center' }}>
+            <ErpLogoIcon size={54} />
+          </div>
+
           <div style={{ 
-            width: '80px', 
-            height: '80px', 
-            background: 'linear-gradient(45deg, #38a169, #2f855a)', 
+            width: '60px', 
+            height: '60px', 
+            background: '#ecfdf5', 
+            color: '#10b981',
             borderRadius: '50%', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            margin: '0 auto 30px auto'
+            margin: '0 auto 20px auto'
           }}>
-            <span style={{ fontSize: '40px', color: '#fff' }}>✓</span>
+            <FiCheckCircle size={32} />
           </div>
 
           <h2 style={{ 
-            color: '#333', 
-            fontSize: '24px', 
-            margin: '0 0 15px 0',
-            fontWeight: '600'
+            color: '#0f172a', 
+            fontSize: '20px', 
+            margin: '0 0 10px 0',
+            fontWeight: '700'
           }}>
             Check Your Email
           </h2>
           
           <p style={{ 
-            color: '#666', 
-            fontSize: '16px', 
-            margin: '0 0 30px 0',
+            color: '#64748b', 
+            fontSize: '14px', 
+            margin: '0 0 28px 0',
             lineHeight: '1.5'
           }}>
             We've sent a password reset link to <strong>{email}</strong>. 
@@ -146,18 +125,18 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin, onRedire
             onClick={onBackToLogin}
             style={{
               width: '100%',
-              padding: '16px',
-              background: 'linear-gradient(135deg, #1a2c7fff 0%, #0a174e 100%)',
+              padding: '13px',
+              background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
               color: '#fff',
               border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
+              borderRadius: '10px',
+              fontSize: '14px',
               fontWeight: '600',
               cursor: 'pointer',
               transition: 'all 0.2s ease'
             }}
           >
-            Back to Login
+            ← Back to Sign In
           </button>
         </div>
       </div>
@@ -170,72 +149,86 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin, onRedire
       justifyContent: 'center', 
       alignItems: 'center', 
       minHeight: '100vh', 
-      background: 'linear-gradient(135deg, #1a2c7fff 0%, #0a174e 100%)',
-      fontFamily: 'Arial, sans-serif',
-      padding: '20px'
+      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0a174e 100%)',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      padding: '24px 16px',
+      boxSizing: 'border-box'
     }}>
       <div style={{ 
         background: '#fff', 
-        padding: '40px', 
-        borderRadius: '16px', 
-        boxShadow: '0 20px 40px rgba(0,0,0,0.1)', 
-        maxWidth: '500px', 
+        padding: '40px 36px', 
+        borderRadius: '20px', 
+        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', 
+        maxWidth: '460px', 
         width: '100%',
-        margin: '0 auto'
+        boxSizing: 'border-box'
       }}>
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <h2 style={{ 
-            color: '#333', 
-            fontSize: '20px', 
-            margin: '0 0 8px 0',
-            fontWeight: '600'
+        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+          <div style={{ marginBottom: '14px', display: 'flex', justifyContent: 'center' }}>
+            <ErpLogoIcon size={54} />
+          </div>
+
+          <h1 style={{ 
+            fontSize: '22px', 
+            fontWeight: '800', 
+            color: '#0f172a', 
+            margin: '0 0 4px 0',
+            letterSpacing: '-0.5px'
           }}>
-            Forgot Password?
-          </h2>
-          <p style={{ color: '#666', fontSize: '14px', margin: '0' }}>
-            Enter your email address and we'll send you a link to reset your password
+            ERP&CRM portal
+          </h1>
+
+          <div style={{ 
+            fontSize: '13px', 
+            fontWeight: '700', 
+            color: '#2563eb', 
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            marginBottom: '10px'
+          }}>
+            Operations Portal
+          </div>
+
+          <p style={{ color: '#64748b', fontSize: '13px', margin: '0' }}>
+            Enter your email to receive password reset instructions
           </p>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '25px' }}>
+        <form onSubmit={handleSubmit} noValidate>
+          <div style={{ marginBottom: '20px' }}>
             <label style={{ 
               display: 'block', 
-              marginBottom: '8px', 
+              marginBottom: '6px', 
               fontWeight: '600', 
-              color: '#333',
-              fontSize: '14px'
+              color: '#334155',
+              fontSize: '13px'
             }}>
               Email Address
             </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => handleInputChange(e.target.value)}
-              placeholder="Enter your email address"
-              style={{ 
-                width: '100%', 
-                padding: '14px 16px', 
-                border: fieldErrors.email ? '2px solid #dc2626' : '2px solid #e1e5e9', 
-                borderRadius: '8px', 
-                fontSize: '16px',
-                transition: 'border-color 0.2s ease',
-                boxSizing: 'border-box'
-              }}
-              onFocus={(e) => e.target.style.borderColor = fieldErrors.email ? '#dc2626' : '#6c3fc5'}
-              onBlur={(e) => e.target.style.borderColor = fieldErrors.email ? '#dc2626' : '#e1e5e9'}
-            />
+            <div style={{ position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>
+                <FiMail size={15} />
+              </span>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => handleInputChange(e.target.value)}
+                placeholder="name@company.com"
+                style={{ 
+                  width: '100%', 
+                  padding: '11px 14px 11px 38px', 
+                  border: fieldErrors.email ? '1.5px solid #ef4444' : '1.5px solid #cbd5e1', 
+                  borderRadius: '10px', 
+                  fontSize: '14px',
+                  color: '#0f172a',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
             {fieldErrors.email && (
-              <div style={{ 
-                fontSize: '12px', 
-                color: '#dc2626', 
-                marginTop: '4px',
-                fontWeight: '500',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}>
-                ⚠️ {fieldErrors.email}
+              <div style={{ fontSize: '12px', color: '#ef4444', marginTop: '4px', fontWeight: '500' }}>
+                {fieldErrors.email}
               </div>
             )}
           </div>
@@ -243,16 +236,19 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin, onRedire
           {error && (
             <div style={{ 
               background: '#fef2f2', 
-              border: '1px solid #fecaca',
+              border: '1px solid #fee2e2',
               color: '#dc2626', 
-              padding: '12px 16px', 
-              borderRadius: '8px', 
-              marginBottom: '20px',
-              fontSize: '14px',
-              textAlign: 'center',
+              padding: '10px 14px', 
+              borderRadius: '10px', 
+              marginBottom: '18px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
               fontWeight: '500'
             }}>
-              ⚠️ {error}
+              <FiAlertCircle size={15} />
+              <span>{error}</span>
             </div>
           )}
 
@@ -261,37 +257,42 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin, onRedire
             disabled={loading}
             style={{
               width: '100%',
-              padding: '16px',
-              background: loading ? '#ccc' : 'linear-gradient(135deg, #1a2c7fff 0%, #0a174e 100%)',
+              padding: '13px',
+              background: loading ? '#94a3b8' : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
               color: '#fff',
               border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
+              borderRadius: '10px',
+              fontSize: '14px',
               fontWeight: '600',
               cursor: loading ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s ease',
-              marginBottom: '20px'
+              boxShadow: loading ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.25)'
             }}
           >
-            {loading ? 'Sending Reset Link...' : 'Send Reset Link'}
+            {loading ? 'Sending Instructions...' : 'Send Reset Instructions'}
           </button>
         </form>
 
-        <div style={{ textAlign: 'center' }}>
+        <div style={{ 
+          marginTop: '22px', 
+          paddingTop: '16px', 
+          borderTop: '1px solid #f1f5f9', 
+          textAlign: 'center' 
+        }}>
           <button
             type="button"
             onClick={onBackToLogin}
             style={{
               background: 'transparent',
-              color: '#1a2c7fff',
+              color: '#2563eb',
               border: 'none',
-              fontSize: '14px',
+              fontSize: '13px',
               cursor: 'pointer',
-              textDecoration: 'underline',
-              padding: '8px'
+              fontWeight: '600',
+              padding: 0
             }}
           >
-            ← Back to Login
+            ← Back to Sign In
           </button>
         </div>
       </div>

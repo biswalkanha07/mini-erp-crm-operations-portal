@@ -1,4 +1,5 @@
-const Sale = require('../models/Sale');
+const { query } = require('../db/index');
+const { mapSale } = require('../db/mapper');
 const { parseISO, startOfDay, endOfDay } = require("date-fns");
 const { zonedTimeToUtc } = require('date-fns-tz');
 
@@ -6,16 +7,19 @@ const { zonedTimeToUtc } = require('date-fns-tz');
 exports.testSalesData = async (req, res) => {
   try {
     const { storeId } = req.params;
-    const sales = await Sale.find({ storeId }).limit(10);
+    const result = await query(
+      'SELECT * FROM sales WHERE store_id = $1 ORDER BY date_time DESC LIMIT 10',
+      [storeId]
+    );
     res.json({
       storeId,
-      totalSales: sales.length,
-      sales: sales.map(sale => ({
-        transactionId: sale.transactionId,
-        customerDetails: sale.customerDetails,
-        grandTotal: sale.grandTotal,
-        dateTime: sale.dateTime,
-        paymentMethod: sale.paymentMethod
+      totalSales: result.rows.length,
+      sales: result.rows.map(sale => ({
+        transactionId: sale.transaction_id,
+        customerDetails: typeof sale.customer_details === 'string' ? JSON.parse(sale.customer_details) : sale.customer_details,
+        grandTotal: Number(sale.grand_total),
+        dateTime: sale.date_time,
+        paymentMethod: sale.payment_method
       }))
     });
   } catch (err) {
@@ -29,137 +33,75 @@ exports.getCustomerReports = async (req, res) => {
   try {
     const { storeId } = req.params;
     const { startDate, endDate, searchTerm } = req.query;
-    
-    // First, let's check what sales data exists for this store
-    // const allSales = await Sale.find({ storeId }).limit(5);
-    // console.log('Sample sales for store:', storeId, allSales.map(sale => ({
-    //   transactionId: sale.transactionId,
-    //   customerDetails: sale.customerDetails,
-    //   grandTotal: sale.grandTotal,
-    //   dateTime: sale.dateTime
-    // })));
-    
-    // Build date filter if provided
-    let dateFilter = {};
+
+    const conditions = ['(s.store_id = $1 OR st.store_id = $1)'];
+    const params = [storeId];
+    let pIdx = 2;
+
     if (startDate && endDate) {
       const timeZone = "Asia/Kolkata";
       const start = zonedTimeToUtc(startOfDay(parseISO(startDate)), timeZone);
       const end = zonedTimeToUtc(endOfDay(parseISO(endDate)), timeZone);
-      dateFilter = { dateTime: { $gte: start, $lte: end } };
+      conditions.push(`s.date_time >= $${pIdx} AND s.date_time <= $${pIdx + 1}`);
+      params.push(start, end);
+      pIdx += 2;
     }
 
-    // Build search filter if provided
-    let searchFilter = {};
-    if (searchTerm) {
-      const phoneSearchTerm = searchTerm.replace(/\D/g, ''); // Extract digits for phone search
-      const searchConditions = [];
-
-      // Search in customer name
-      searchConditions.push({
-        'customerDetails.name': { 
-          $regex: searchTerm, 
-          $options: 'i' 
-        }
-      });
-
-      // Add phone search if search term contains digits
+    if (searchTerm && searchTerm.trim()) {
+      const phoneSearchTerm = searchTerm.replace(/\D/g, '');
       if (phoneSearchTerm.length > 0) {
-        searchConditions.push({
-          'customerDetails.phone': { 
-            $regex: phoneSearchTerm, 
-            $options: 'i' 
-          }
-        });
+        conditions.push(`(
+          s.customer_details->>'name' ILIKE $${pIdx} OR
+          s.customer_details->>'phone' ILIKE $${pIdx + 1}
+        )`);
+        params.push(`%${searchTerm.trim()}%`, `%${phoneSearchTerm}%`);
+        pIdx += 2;
+      } else {
+        conditions.push(`s.customer_details->>'name' ILIKE $${pIdx}`);
+        params.push(`%${searchTerm.trim()}%`);
+        pIdx++;
       }
-
-      searchFilter = { $or: searchConditions };
     }
 
-    // Aggregate customer data
-    const customerReports = await Sale.aggregate([
-      {
-        $match: {
-          storeId: storeId,
-          ...dateFilter,
-          ...searchFilter
-        }
-      },
-      {
-        $addFields: {
-          // Create a customer identifier - use phone if available, otherwise name, otherwise email, otherwise 'anonymous'
-          customerId: {
-            $cond: {
-              if: { $and: [{ $ne: ['$customerDetails.phone', null] }, { $ne: ['$customerDetails.phone', ''] }] },
-              then: '$customerDetails.phone',
-              else: {
-                $cond: {
-                  if: { $and: [{ $ne: ['$customerDetails.name', null] }, { $ne: ['$customerDetails.name', ''] }] },
-                  then: '$customerDetails.name',
-                  else: {
-                    $cond: {
-                      if: { $and: [{ $ne: ['$customerDetails.email', null] }, { $ne: ['$customerDetails.email', ''] }] },
-                      then: '$customerDetails.email',
-                      else: 'anonymous'
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      {
-        $group: {
-          _id: '$customerId',
-          name: { $first: '$customerDetails.name' },
-          phone: { $first: '$customerDetails.phone' },
-          email: { $first: '$customerDetails.email' },
-          totalVisits: { $sum: 1 },
-          totalPurchases: { $sum: 1 }, // Same as visits for now, could be different if we track visits separately
-          totalSpent: { $sum: '$grandTotal' },
-          firstVisit: { $min: '$dateTime' },
-          lastVisit: { $max: '$dateTime' },
-          transactions: { $push: '$grandTotal' }
-        }
-      },
-      {
-        $addFields: {
-          averageOrderValue: {
-            $divide: ['$totalSpent', '$totalPurchases']
-          }
-        }
-      },
-      {
-        $sort: { totalSpent: -1 }
-      }
-    ]);
+    const sql = `
+      SELECT
+        COALESCE(NULLIF(s.customer_details->>'phone', ''), NULLIF(s.customer_details->>'name', ''), NULLIF(s.customer_details->>'email', ''), 'anonymous') as customer_id,
+        MAX(s.customer_details->>'name') as name,
+        MAX(s.customer_details->>'phone') as phone,
+        MAX(s.customer_details->>'email') as email,
+        COUNT(*) as total_visits,
+        COUNT(*) as total_purchases,
+        SUM(s.grand_total) as total_spent,
+        MIN(s.date_time) as first_visit,
+        MAX(s.date_time) as last_visit
+      FROM sales s
+      LEFT JOIN stores st ON s.store_id = st.id OR s.store_id = st.store_id
+      WHERE ${conditions.join(' AND ')}
+      GROUP BY customer_id
+      ORDER BY total_spent DESC
+    `;
 
-    // Transform the data to match frontend expectations
-    const customers = customerReports.map(report => ({
-      _id: report._id,
-      name: report.name || (report._id === 'anonymous' ? null : report._id),
-      phone: report.phone || null,
-      email: report.email || null,
-      totalVisits: report.totalVisits,
-      totalPurchases: report.totalPurchases,
-      totalSpent: report.totalSpent,
-      firstVisit: report.firstVisit,
-      lastVisit: report.lastVisit,
-      averageOrderValue: report.averageOrderValue
-    }));
+    const result = await query(sql, params);
+    const customers = result.rows.map(report => {
+      const totalPurchases = Number(report.total_purchases) || 1;
+      const totalSpent = Number(report.total_spent) || 0;
+      return {
+        _id: report.customer_id,
+        name: report.name || (report.customer_id === 'anonymous' ? null : report.customer_id),
+        phone: report.phone || null,
+        email: report.email || null,
+        totalVisits: Number(report.total_visits) || 0,
+        totalPurchases,
+        totalSpent,
+        firstVisit: report.first_visit,
+        lastVisit: report.last_visit,
+        averageOrderValue: totalPurchases > 0 ? totalSpent / totalPurchases : 0
+      };
+    });
 
-    // Calculate summary statistics
     const totalCustomers = customers.length;
     const totalVisits = customers.reduce((sum, customer) => sum + customer.totalVisits, 0);
     const totalRevenue = customers.reduce((sum, customer) => sum + customer.totalSpent, 0);
-
-    // console.log('Customer reports generated:', {
-    //   storeId,
-    //   totalCustomers,
-    //   totalVisits,
-    //   totalRevenue,
-    //   sampleCustomers: customers.slice(0, 3)
-    // });
 
     res.json({
       customers,
@@ -180,45 +122,37 @@ exports.getTopCustomers = async (req, res) => {
     const { storeId } = req.params;
     const { limit = 10 } = req.query;
 
-    const topCustomers = await Sale.aggregate([
-      {
-        $match: {
-          storeId: storeId,
-          $or: [
-            { 'customerDetails.name': { $exists: true, $ne: '' } },
-            { 'customerDetails.phone': { $exists: true, $ne: '' } },
-            { 'customerDetails.email': { $exists: true, $ne: '' } }
-          ]
-        }
-      },
-      {
-        $group: {
-          _id: {
-            name: '$customerDetails.name',
-            phone: '$customerDetails.phone',
-            email: '$customerDetails.email'
-          },
-          totalSpent: { $sum: '$grandTotal' },
-          totalVisits: { $sum: 1 },
-          lastVisit: { $max: '$dateTime' }
-        }
-      },
-      {
-        $sort: { totalSpent: -1 }
-      },
-      {
-        $limit: parseInt(limit)
-      }
-    ]);
+    const sql = `
+      SELECT
+        s.customer_details->>'name' as name,
+        s.customer_details->>'phone' as phone,
+        s.customer_details->>'email' as email,
+        SUM(s.grand_total) as total_spent,
+        COUNT(*) as total_visits,
+        MAX(s.date_time) as last_visit
+      FROM sales s
+      LEFT JOIN stores st ON s.store_id = st.id OR s.store_id = st.store_id
+      WHERE (s.store_id = $1 OR st.store_id = $1)
+        AND (
+          NULLIF(s.customer_details->>'name', '') IS NOT NULL OR
+          NULLIF(s.customer_details->>'phone', '') IS NOT NULL OR
+          NULLIF(s.customer_details->>'email', '') IS NOT NULL
+        )
+      GROUP BY s.customer_details->>'name', s.customer_details->>'phone', s.customer_details->>'email'
+      ORDER BY total_spent DESC
+      LIMIT $2
+    `;
 
-    const customers = topCustomers.map(customer => ({
-      _id: `${customer._id.name || 'anonymous'}-${customer._id.phone || 'nophone'}`,
-      name: customer._id.name || 'Anonymous Customer',
-      phone: customer._id.phone,
-      email: customer._id.email,
-      totalSpent: customer.totalSpent,
-      totalVisits: customer.totalVisits,
-      lastVisit: customer.lastVisit
+    const result = await query(sql, [storeId, parseInt(limit) || 10]);
+
+    const customers = result.rows.map(customer => ({
+      _id: `${customer.name || 'anonymous'}-${customer.phone || 'nophone'}`,
+      name: customer.name || 'Anonymous Customer',
+      phone: customer.phone,
+      email: customer.email,
+      totalSpent: Number(customer.total_spent) || 0,
+      totalVisits: Number(customer.total_visits) || 0,
+      lastVisit: customer.last_visit
     }));
 
     res.json(customers);
@@ -239,19 +173,47 @@ exports.getCustomerPurchaseHistory = async (req, res) => {
       return res.status(400).json({ error: 'At least one customer identifier is required' });
     }
 
-    // Build customer filter
+    const conditions = ['(s.store_id = $1 OR st.store_id = $1)'];
+    const params = [storeId];
     const customerFilter = [];
-    if (customerPhone) customerFilter.push({ 'customerDetails.phone': customerPhone });
-    if (customerEmail) customerFilter.push({ 'customerDetails.email': customerEmail });
-    if (customerName) customerFilter.push({ 'customerDetails.name': customerName });
+    let pIdx = 2;
 
-    const purchases = await Sale.find({
-      storeId: storeId,
-      $or: customerFilter
-    })
-    .sort({ dateTime: -1 })
-    .populate('storeId', 'storeName')
-    .populate('cashier', 'name');
+    if (customerPhone) {
+      customerFilter.push(`s.customer_details->>'phone' = $${pIdx}`);
+      params.push(customerPhone);
+      pIdx++;
+    }
+    if (customerEmail) {
+      customerFilter.push(`s.customer_details->>'email' = $${pIdx}`);
+      params.push(customerEmail);
+      pIdx++;
+    }
+    if (customerName) {
+      customerFilter.push(`s.customer_details->>'name' = $${pIdx}`);
+      params.push(customerName);
+      pIdx++;
+    }
+
+    conditions.push(`(${customerFilter.join(' OR ')})`);
+
+    const sql = `
+      SELECT s.*,
+             row_to_json(st.*) as store_obj,
+             row_to_json(u.*) as cashier_obj
+      FROM sales s
+      LEFT JOIN stores st ON s.store_id = st.id OR s.store_id = st.store_id
+      LEFT JOIN users u ON s.cashier_id = u.id OR s.cashier_id = u.user_id
+      WHERE ${conditions.join(' AND ')}
+      ORDER BY s.date_time DESC
+    `;
+
+    const result = await query(sql, params);
+    const purchases = result.rows.map(r => {
+      const sale = mapSale(r);
+      if (r.store_obj) sale.storeId = { storeName: r.store_obj.store_name };
+      if (r.cashier_obj) sale.cashier = { name: r.cashier_obj.name };
+      return sale;
+    });
 
     res.json(purchases);
 

@@ -5,7 +5,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # Environment variables
-# .env
+.env
+*/.env
 .env.local
 .env.development.local
 .env.test.local
@@ -74,3 +75,7 @@ uploads/
 # Build output
 dist/
 build/
+
+# Data backup
+data-backup/
+*.dump.json

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#1E3A8A" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA" />
+      <stop offset="100%" stop-color="#3B82F6" />
+    </linearGradient>
+    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <!-- Background Rounded Base -->
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#bgGrad)" filter="url(#dropShadow)" />
+
+  <!-- Inner Geometric Grid / Layers -->
+  <!-- Layer 1: Top Platform -->
+  <path d="M64 28 L94 44 L64 60 L34 44 Z" fill="#FFFFFF" opacity="0.95" />
+  
+  <!-- Layer 2: Middle Platform -->
+  <path d="M34 56 L64 72 L94 56 L94 66 L64 82 L34 66 Z" fill="url(#accentGrad)" opacity="0.9" />
+  
+  <!-- Layer 3: Base Platform -->
+  <path d="M34 78 L64 94 L94 78 L94 88 L64 104 L34 88 Z" fill="#93C5FD" opacity="0.9" />
+  
+  <!-- Subtle Center Core Light -->
+  <circle cx="64" cy="44" r="5" fill="#1E3A8A" />
+</svg>

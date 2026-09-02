@@ -1,0 +1,4 @@
+storeName,storeLocation,storeAddress,contactPersonName,contactNumber,email,gstRate,discountRate,theme
+"Sample Store 1","Mumbai","123 Main Street, Mumbai, Maharashtra 400001","John Doe","9876543210","john@example.com","18","5","light"
+"Sample Store 2","Delhi","456 Park Avenue, New Delhi, Delhi 110001","Jane Smith","9876543211","jane@example.com","18","10","dark"
+"Sample Store 3","Bangalore","789 Tech Park, Bangalore, Karnataka 560001","Mike Johnson","9876543212","mike@example.com","12","8","light"

@@ -5,43 +5,30 @@
 </p>
 
 <p align="center">
-  Manage customers, products, inventory, stock movements, sales challans, users, and business operations from a single modern web application.
+  Manage customers, products, inventory, stock movements, sales challans,
+  users, follow-ups, and business operations from one centralized platform.
 </p>
 
 <p align="center">
 
-<a href="https://nodejs.org/">
 <img src="https://img.shields.io/badge/Node.js-20%2B-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js"/>
-</a>
-
-<a href="https://www.typescriptlang.org/">
-<img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
-</a>
-
-<a href="https://expressjs.com/">
-<img src="https://img.shields.io/badge/Express.js-Backend-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express.js"/>
-</a>
-
-<a href="https://react.dev/">
+<img src="https://img.shields.io/badge/Express.js-REST%20API-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express.js"/>
 <img src="https://img.shields.io/badge/React-18%2B-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React"/>
-</a>
-
-<a href="https://www.postgresql.org/">
+<img src="https://img.shields.io/badge/TypeScript-Frontend-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
 <img src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL"/>
-</a>
-
-<a href="https://jwt.io/">
+<img src="https://img.shields.io/badge/Neon-PostgreSQL-00E599?style=for-the-badge&logo=postgresql&logoColor=black" alt="Neon"/>
+<img src="https://img.shields.io/badge/Render-Deployment-46E3B7?style=for-the-badge&logo=render&logoColor=black" alt="Render"/>
 <img src="https://img.shields.io/badge/JWT-Authentication-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT"/>
-</a>
 
 </p>
 
 <p align="center">
 
-<img src="https://img.shields.io/badge/REST%20API-Enabled-FF6B35?style=flat-square" />
-<img src="https://img.shields.io/badge/RBAC-Enabled-8E44AD?style=flat-square" />
-<img src="https://img.shields.io/badge/Responsive-UI-00A86B?style=flat-square" />
-<img src="https://img.shields.io/badge/Docker-Supported-2496ED?style=flat-square&logo=docker&logoColor=white" />
+<img src="https://img.shields.io/badge/REST%20API-Enabled-FF6B35?style=flat-square" alt="REST API"/>
+<img src="https://img.shields.io/badge/RBAC-Enabled-8E44AD?style=flat-square" alt="RBAC"/>
+<img src="https://img.shields.io/badge/Responsive-UI-00A86B?style=flat-square" alt="Responsive UI"/>
+<img src="https://img.shields.io/badge/PostgreSQL-Production-4169E1?style=flat-square" alt="PostgreSQL"/>
+<img src="https://img.shields.io/badge/Status-Production-2EA44F?style=flat-square" alt="Production"/>
 
 </p>
 
@@ -49,1354 +36,1006 @@
 
 ## 📌 Overview
 
-**Mini ERP + CRM Operations Portal** is a full-stack business management application designed for **wholesale and distribution companies**.
+**Mini ERP + CRM Operations Portal** is a full-stack business operations platform designed for **wholesale and distribution companies**.
 
-The platform combines essential **ERP (Enterprise Resource Planning)** and **CRM (Customer Relationship Management)** capabilities into one centralized system.
+The platform combines essential **ERP (Enterprise Resource Planning)** and **CRM (Customer Relationship Management)** workflows into one centralized system.
 
 It helps businesses manage:
 
-* 👥 Customers and CRM activities
-* 📦 Products and categories
-* 📊 Inventory and stock levels
-* 🔄 Stock movement history
-* 🧾 Sales challans
-* 👤 Role-based users
-* 📈 Operational dashboards
-* 🔐 Authentication and authorization
-* 📝 Customer follow-ups and notes
-* 🧮 Business and sales information
+- 👥 Customers and CRM activities
+- 📦 Products and categories
+- 📊 Inventory and stock levels
+- 🔄 Stock movement history
+- 🧾 Sales challans
+- 👤 Role-based users
+- 📈 Operational dashboards
+- 🔐 Authentication and authorization
+- 📅 Customer follow-ups
+- 📝 Customer notes
+- 🧮 Business and sales information
 
-The system is designed with a **RESTful backend**, **responsive React frontend**, and **relational PostgreSQL database architecture**.
+The project extends an existing POS foundation and transforms it into a focused ERP + CRM operations platform.
 
 ---
 
-# ✨ Key Features
+# 🎯 Project Objective
 
-## 👥 CRM — Customer Management
+The objective of this project is to provide a practical ERP + CRM solution for wholesale and distribution operations while demonstrating:
 
-Manage the complete customer lifecycle from one place.
+- Full-stack web application development
+- REST API development
+- JWT authentication
+- Role-based access control
+- PostgreSQL database integration
+- Customer relationship management
+- Product and inventory management
+- Stock movement auditing
+- Sales challan workflows
+- Transaction-safe stock operations
+- Responsive React frontend
+- Production deployment
+- API testing and documentation
 
-### Customer Information
+The implementation focuses on the core business requirements without unnecessarily expanding the system beyond the assignment scope.
 
-* Customer Name
-* Mobile Number
-* Email
-* Business Name
-* GST Number
-* Customer Type
+---
 
-  * Retail
-  * Wholesale
-  * Distributor
-* Address
-* Customer Status
+# ✨ Features
 
-  * Lead
-  * Active
-  * Inactive
-* Follow-up Date
-* Notes
+## 🔐 Authentication & Authorization
 
-### CRM Operations
+- JWT-based authentication
+- Secure password hashing
+- Role-based access control
+- Protected API routes
+- Organization-level data isolation
+- Authenticated frontend routes
+- Role-aware navigation
+- Structured authentication errors
 
-* ➕ Add customer
-* ✏️ Edit customer
-* 🔍 Search customers
-* 📋 View customer details
-* 📝 Add follow-up notes
-* 📅 Track follow-up dates
-* 👁️ View customer history
-* 🗑️ Manage customer records
+### Supported Roles
+
+| Role | Access |
+|---|---|
+| 👑 **Admin** | Full system access |
+| 💼 **Sales** | CRM, customer follow-ups, challans and operational views |
+| 🏭 **Warehouse** | Products, inventory and stock movements |
+| 💰 **Accounts** | Customer, challan and operational/financial views |
+
+Legacy POS roles such as `manager` and `cashier` are retained where required for compatibility with existing POS functionality.
+
+---
+
+# 👥 CRM — Customer Management
+
+The CRM module manages customers and their business interactions.
+
+## Customer Fields
+
+- Customer name
+- Mobile number
+- Email
+- Business name
+- GST number
+- Customer type
+- Address
+- Status
+- Follow-up date
+- Notes
+
+### Customer Types
+
+- Retail
+- Wholesale
+- Distributor
+
+### Customer Status
+
+- Lead
+- Active
+- Inactive
+
+## CRM Capabilities
+
+- Add customer
+- Edit customer
+- View customer details
+- Search customers
+- Filter customers
+- Pagination
+- Customer follow-ups
+- Follow-up history
+- Follow-up notes
+- Customer status management
+- Organization-level isolation
 
 ---
 
 # 📦 Product & Inventory Management
 
-The inventory module provides centralized control over products and stock.
+The inventory module manages products, pricing and stock information.
 
-### Product Information
+## Product Fields
 
-* Product Name
-* SKU
-* Category
-* Unit Price
-* Current Stock
-* Minimum Stock Alert Quantity
-* Warehouse / Location
+- Product name
+- SKU / Product Code
+- Category
+- Unit price
+- Current stock
+- Minimum stock alert quantity
+- Warehouse / Location
+- Barcode where applicable
 
-### Inventory Features
+## Inventory Capabilities
 
-* Create products
-* Update products
-* Search products
-* Filter products
-* View product details
-* Monitor stock levels
-* Low-stock alerts
-* Warehouse/location tracking
+- Add product
+- Edit product
+- View products
+- Search products
+- Filter products
+- Pagination
+- Low-stock detection
+- Out-of-stock detection
+- Warehouse/location tracking
+- Current stock visibility
 
----
+### Low Stock Rule
 
-# 🔄 Stock Movement Tracking
-
-Every important stock change can be recorded as a movement.
-
-### Movement Types
-
-| Type     | Description                  |
-| -------- | ---------------------------- |
-| 🟢 `IN`  | Stock added to inventory     |
-| 🔴 `OUT` | Stock removed from inventory |
-
-### Stock Movement Data
-
-* Product
-* Quantity
-* Movement Type
-* Reason
-* Created By
-* Timestamp
-
-This provides an auditable history of inventory changes.
-
----
-
-# 🧾 Sales Challan Management
-
-The Sales Challan module manages product dispatch/sales operations.
-
-### Challan Features
-
-* Create challan
-* Select customer
-* Add multiple products
-* Specify product quantities
-* Automatic challan number
-* Draft challans
-* Confirm challans
-* Cancel challans
-* Product snapshot storage
-* Stock validation
-* Automatic stock deduction
-
-### Challan Status
+A product is considered low stock when:
 
 ```text
+minimum_stock > 0
+AND
+current_stock <= minimum_stock
+🔄 Stock Movement Management
+The platform maintains an auditable history of inventory changes.
+
+Each stock movement records:
+
+Field	Description
+Product	Product affected by the movement
+Quantity	Quantity changed
+Type	IN or OUT
+Reason	Reason for the movement
+Created By	User who performed the operation
+Timestamp	Date and time
+Reference	Related transaction/challan where applicable
+Movement Types
+IN
+→ Stock added to inventory
+
+OUT
+→ Stock removed from inventory
+Stock movement records are treated as historical audit records.
+
+🧾 Sales Challan Management
+The Sales Challan module implements the required wholesale sales-document workflow.
+
+Challan Features
+Select customer
+
+Add multiple products
+
+Add product quantities
+
+Automatic challan number
+
+Create Draft Challan
+
+Edit Draft Challan
+
+Confirm Challan
+
+Cancel Challan
+
+View Challan details
+
+Preserve historical product information
+
+Challan Status
 DRAFT
-   │
-   ├───────────────┐
-   │               │
-   ▼               ▼
-CONFIRMED       CANCELLED
-```
-
----
-
-# 🔐 Stock Safety
-
-The system prevents invalid inventory operations.
-
-### No Negative Stock
-
-When confirming a challan:
-
-```text
-Requested Quantity
-        ↓
-Check Current Stock
-        ↓
- ┌──────┴──────┐
- │             │
-Enough       Insufficient
- │             │
- ▼             ▼
-Confirm      Return Error
- │
- ▼
-Reduce Stock
- │
- ▼
-Create OUT Movement
-```
-
-If available stock is insufficient, the API rejects the operation instead of allowing negative inventory.
-
----
-
-# 📸 Product Snapshot in Challans
-
-Confirmed challans store product information as a **snapshot**.
-
-For example:
-
-```json
-{
-  "productId": "123",
-  "productName": "Product A",
-  "sku": "SKU-001",
-  "unitPrice": 500,
-  "quantity": 10
-}
-```
-
-This ensures that historical challans remain accurate even if the product's name, SKU, or price changes later.
-
----
-
-# 👤 Role-Based Access Control
-
-The application uses **RBAC (Role-Based Access Control)**.
-
-## Available Roles
-
-| Role             | Access                                                  |
-| ---------------- | ------------------------------------------------------- |
-| 🔴 **Admin**     | Full system access                                      |
-| 🔵 **Sales**     | Customers, CRM, challans and relevant inventory         |
-| 🟢 **Warehouse** | Products, inventory and stock movements                 |
-| 🟡 **Accounts**  | Customers, challans, invoices and financial information |
-
-Authorization is enforced at the **backend API level**, not only through frontend navigation.
-
----
-
-# 🔑 Authentication
-
-Authentication is implemented using **JWT-based authentication**.
-
-### Authentication Flow
-
-```text
-User
- │
- ▼
-Login
- │
- ▼
-Validate Credentials
- │
- ▼
-Generate JWT
- │
- ▼
-Frontend Stores Token
- │
- ▼
-Send Token with API Requests
- │
- ▼
-Backend Middleware
- │
- ▼
-Verify Token
- │
- ▼
-Check User Role
- │
- ▼
-Allow / Reject Request
-```
-
----
-
-# 🏗️ System Architecture
-
-```text
-┌─────────────────────────────────────────────┐
-│                  FRONTEND                   │
-│                                             │
-│              React + TypeScript             │
-│                                             │
-│  Dashboard │ CRM │ Inventory │ Challans    │
-└──────────────────────┬──────────────────────┘
-                       │
-                       │ REST API / JSON
-                       ▼
-┌─────────────────────────────────────────────┐
-│                  BACKEND                    │
-│                                             │
-│          Node.js + Express + TypeScript     │
-│                                             │
-│ Auth │ CRM │ Products │ Stock │ Challans    │
-└──────────────────────┬──────────────────────┘
-                       │
-                       │ SQL / ORM
-                       ▼
-┌─────────────────────────────────────────────┐
-│                 DATABASE                    │
-│                                             │
-│                 PostgreSQL                  │
-│                                             │
-│ Users │ Customers │ Products │ Stock       │
-│ Challans │ Follow-ups │ Categories         │
-└─────────────────────────────────────────────┘
-```
-
----
-
-# 🛠️ Technology Stack
-
-## Frontend
-
-| Technology    | Purpose                        |
-| ------------- | ------------------------------ |
-| ⚛️ React      | UI development                 |
-| 📘 TypeScript | Type-safe frontend development |
-| 🎨 CSS        | Responsive styling             |
-| 🔗 REST API   | Backend communication          |
-
-## Backend
-
-| Technology    | Purpose                       |
-| ------------- | ----------------------------- |
-| 🟢 Node.js    | Server runtime                |
-| 🚀 Express.js | REST API framework            |
-| 📘 TypeScript | Type-safe backend development |
-| 🔐 JWT        | Authentication                |
-| 🔒 bcrypt     | Password hashing              |
-
-## Database
-
-| Technology           | Purpose              |
-| -------------------- | -------------------- |
-| 🐘 PostgreSQL        | Relational database  |
-| 🔗 ORM / Query Layer | Database interaction |
-
-## Development & Deployment
-
-| Technology                | Purpose             |
-| ------------------------- | ------------------- |
-| 🐳 Docker                 | Containerization    |
-| 🔀 Git                    | Version control     |
-| 🐙 GitHub                 | Source code hosting |
-| ☁️ Render / Railway / AWS | Deployment          |
-| ▲ Vercel / Netlify        | Frontend hosting    |
-
----
-
-# 📂 Project Structure
-
-```text
-mini-erp-crm-operations-portal/
-│
-├── POS-Backend/
-│   │
-│   ├── src/
-│   │   ├── config/
-│   │   ├── controllers/
-│   │   ├── middleware/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   ├── services/
-│   │   ├── validators/
-│   │   ├── utils/
-│   │   └── app.ts
-│   │
-│   ├── tests/
-│   ├── Dockerfile
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── .env
-│
-├── POS-Frontend/
-│   │
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── layouts/
-│   │   ├── services/
-│   │   ├── hooks/
-│   │   ├── types/
-│   │   ├── utils/
-│   │   └── App.tsx
-│   │
-│   ├── public/
-│   ├── package.json
-│   └── tsconfig.json
-│
-├── README.md
-└── .gitignore
-```
-
-> **Note:** The exact folder structure may vary slightly depending on the implementation. Existing reusable POS modules should be preserved where appropriate rather than unnecessarily rewritten.
-
----
-
-# ⚙️ Prerequisites
-
-Before running the project locally, install:
-
-### Required
-
-* Node.js `20+`
-* npm `10+`
-* PostgreSQL `15+`
-* Git
-
-### Recommended
-
-* VS Code
-* Postman
-* Docker Desktop
-
-Verify installations:
-
-```bash
-node --version
-npm --version
-psql --version
-git --version
-```
-
----
-
-# 🚀 Installation
-
-## 1️⃣ Clone the Repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/mini-erp-crm-operations-portal.git
-```
-
-Navigate into the project:
-
-```bash
-cd mini-erp-crm-operations-portal
-```
+CONFIRMED
+CANCELLED
+Draft Challan
+Editable
+No stock deduction
+No stock OUT movement
+Confirmed Challan
+Immutable
+Stock deducted
+Stock OUT movement created
+Cancelled Challan
+Immutable
+No new stock deduction
+🛡️ Challan Business Rules
+The system prevents inventory from becoming negative.
 
----
-
-# 🔧 Backend Setup
+During challan confirmation:
 
-Navigate to the backend:
+1. Load the challan
+2. Validate challan status
+3. Lock required product rows
+4. Check available stock
+5. Reject if stock is insufficient
+6. Deduct stock
+7. Create stock OUT movements
+8. Mark challan as CONFIRMED
+9. Commit the transaction
+If available stock is insufficient, the API returns a conflict response and the transaction is rolled back.
 
-```bash
-cd POS-Backend
-```
+HTTP 409 Conflict
+This prevents partial stock deductions.
 
-Install dependencies:
+📸 Product Snapshot Preservation
+Sales challans preserve product information at the time the challan is created.
 
-```bash
-npm install
-```
+Challan item snapshots include:
 
----
+Product name
 
-# 🔐 Backend Environment Variables
+SKU
 
-Create a `.env` file inside:
+Unit price
 
-```text
-POS-Backend/.env
-```
+Quantity
 
-Example:
+Line total
 
-```env
-PORT=5000
+This ensures that historical challans remain accurate even if the product information changes later.
 
-NODE_ENV=development
+📊 ERP Operations Dashboard
+The dashboard provides a centralized view of business operations.
 
-DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/erp_crm
+Customer Metrics
+Total customers
 
-JWT_SECRET=your_super_secret_jwt_key
+Active customers
 
-JWT_EXPIRES_IN=7d
+Lead customers
 
-CORS_ORIGIN=http://localhost:5173
-```
+Inactive customers
 
-### Environment Variable Explanation
+Inventory Metrics
+Total products
 
-| Variable         | Description                  |
-| ---------------- | ---------------------------- |
-| `PORT`           | Backend server port          |
-| `NODE_ENV`       | Application environment      |
-| `DATABASE_URL`   | PostgreSQL connection string |
-| `JWT_SECRET`     | JWT signing secret           |
-| `JWT_EXPIRES_IN` | Token expiration             |
-| `CORS_ORIGIN`    | Frontend URL                 |
+Low-stock products
 
-> ⚠️ Never commit your `.env` file to GitHub.
+Out-of-stock products
 
----
+Total stock quantity
 
-# 🐘 PostgreSQL Database Setup
+Estimated inventory value
 
-Create the database:
+Challan Metrics
+Today's challans
 
-```sql
-CREATE DATABASE erp_crm;
-```
+Draft challans
 
-Connect to it:
+Confirmed challans
 
-```bash
-psql -U postgres -d erp_crm
-```
+Cancelled challans
 
-Run the project's database migrations/schema commands according to the configured ORM/database layer.
+Today's confirmed amount
 
-Example:
+CRM Metrics
+Follow-ups due
 
-```bash
-npm run migrate
-```
+Upcoming follow-ups
 
-or, if the project uses a schema synchronization command:
+Operational Alerts
+🚨 Out-of-stock products
 
-```bash
-npm run db:push
-```
+⚠️ Low-stock products
 
-> Use the command defined in the project's `package.json`.
+🧾 Pending draft challans
 
----
+📅 Due / overdue follow-ups
 
-# ▶️ Start Backend
+🔌 REST API
+The backend exposes REST APIs for authentication, users, CRM, products, inventory, stock movements, sales challans and dashboard operations.
 
-Development:
-
-```bash
-npm run dev
-```
-
-Production build:
-
-```bash
-npm run build
-```
-
-Start production server:
-
-```bash
-npm start
-```
-
-Backend should be available at:
-
-```text
-http://localhost:5000
-```
-
----
-
-# 💻 Frontend Setup
-
-Open a new terminal.
-
-Navigate to:
-
-```bash
-cd POS-Frontend
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
----
-
-# 🌐 Frontend Environment Variables
-
-Create:
-
-```text
-POS-Frontend/.env
-```
-
-Example:
-
-```env
-VITE_API_URL=http://localhost:5000/api
-```
-
----
-
-# ▶️ Start Frontend
-
-```bash
-npm run dev
-```
-
-The frontend will normally be available at:
-
-```text
-http://localhost:5173
-```
-
----
-
-# 🔗 Local Development
-
-Once both servers are running:
-
-```text
-Frontend
-http://localhost:5173
-
-        ↓
-
-Backend API
-http://localhost:5000/api
-
-        ↓
-
-PostgreSQL
-localhost:5432
-```
-
-Open the frontend in your browser:
-
-```text
-http://localhost:5173
-```
-
----
-
-# 🔌 REST API
-
-The application follows REST API principles.
-
-## Authentication
-
-```http
+Production Backend
+https://mini-erp-crm-operations-portal-q5pf.onrender.com
+Production API Base URL
+https://mini-erp-crm-operations-portal-q5pf.onrender.com/api
+Authentication Header
+Protected endpoints use:
+
+Authorization: Bearer <JWT_TOKEN>
+📚 Main API Modules
+Module	Endpoint
+🔐 Authentication	/api/auth
+👤 Users / RBAC	/api/users
+👥 Customers	/api/customers
+📦 Products	/api/products
+📦 Catalogue	/api/catalogues
+🔄 Stock Movements	/api/stock-movements
+🧾 Sales Challans	/api/challans
+📊 Dashboard	/api/dashboard
+🛒 Sales	/api/sales
+🧾 Invoices	/api/invoices
+📦 Orders	/api/orders
+🧪 Core API Endpoints
+Authentication
 POST /api/auth/login
-GET  /api/auth/me
-```
-
----
-
-## Customers
-
-```http
+POST /api/auth/organization/login
+POST /api/auth/store/login
+GET  /api/auth/profile
+Customers
 GET    /api/customers
 GET    /api/customers/:id
 POST   /api/customers
 PUT    /api/customers/:id
 DELETE /api/customers/:id
-```
 
-### Follow-ups
+GET    /api/customers/:id/follow-ups
+POST   /api/customers/:id/follow-ups
+Products
+GET    /api/products
+GET    /api/products/:id
+POST   /api/products
+PUT    /api/products/:id
+DELETE /api/products/:id
+Catalogue Compatibility
+GET    /api/catalogues
+GET    /api/catalogues/:id
+POST   /api/catalogues
+PUT    /api/catalogues/:id
+DELETE /api/catalogues/:id
 
-```http
-POST /api/customers/:id/followups
-GET  /api/customers/:id/followups
-```
-
----
-
-## Products
-
-```http
-GET  /api/products
-GET  /api/products/:id
-POST /api/products
-PUT  /api/products/:id
-```
-
----
-
-## Stock Movements
-
-```http
+GET    /api/catalogues/search
+Stock Movements
 GET  /api/stock-movements
+GET  /api/stock-movements/:id
 POST /api/stock-movements
-```
-
----
-
-## Sales Challans
-
-```http
+Sales Challans
+POST /api/challans
 GET  /api/challans
 GET  /api/challans/:id
-POST /api/challans
 PUT  /api/challans/:id
-```
-
-### Challan Actions
-
-```http
 POST /api/challans/:id/confirm
 POST /api/challans/:id/cancel
-```
-
----
-
-# 📊 API Features
-
-The API supports:
-
-* ✅ Request validation
-* ✅ Authentication
-* ✅ Role-based authorization
-* ✅ Pagination
-* ✅ Search
-* ✅ Filtering
-* ✅ Standard HTTP status codes
-* ✅ Consistent error responses
-* ✅ Stock validation
-* ✅ Transaction-safe challan confirmation
-
----
-
-# ❌ Error Handling
-
-Example insufficient-stock response:
-
-```json
-{
-  "success": false,
-  "message": "Insufficient stock for product SKU-001",
-  "error": {
-    "code": "INSUFFICIENT_STOCK"
-  }
-}
-```
-
-Common HTTP status codes:
-
-| Code  | Meaning               |
-| ----- | --------------------- |
-| `200` | Successful request    |
-| `201` | Resource created      |
-| `400` | Bad request           |
-| `401` | Unauthorized          |
-| `403` | Forbidden             |
-| `404` | Resource not found    |
-| `409` | Conflict              |
-| `422` | Validation error      |
-| `500` | Internal server error |
-
----
-
-# 🔄 Challan Confirmation Transaction
-
-Challan confirmation follows a transaction-safe process:
-
-```text
-BEGIN TRANSACTION
-        │
-        ▼
-Load Challan
-        │
-        ▼
-Check Status
-        │
-        ▼
-Validate Products
-        │
-        ▼
-Lock / Check Stock
-        │
-        ▼
-Is Stock Sufficient?
-    ┌───┴────┐
-   YES       NO
-    │         │
-    ▼         ▼
-Reduce      ROLLBACK
-Stock
-    │
-    ▼
-Create OUT
-Stock Movement
-    │
-    ▼
-Mark Challan
-CONFIRMED
-    │
-    ▼
-COMMIT
-```
-
-This prevents partial updates and helps maintain inventory consistency.
-
----
-
-# 🗃️ Core Database Entities
-
-The target relational database contains the following major entities:
-
-```text
-users
-  │
-  ├── customers
-  │      │
-  │      └── customer_followups
-  │
-  ├── products
-  │      │
-  │      └── stock_movements
-  │
-  └── challans
-          │
-          └── challan_items
-```
-
-### Core Tables
-
-* `users`
-* `customers`
-* `customer_followups`
-* `products`
-* `categories`
-* `stock_movements`
-* `challans`
-* `challan_items`
-
-Additional business tables can be retained where existing POS functionality requires them.
+Dashboard
+GET /api/dashboard/overview
+📋 API Design
+The REST API implements:
 
----
+Request validation
 
-# 📋 Validation Rules
+JWT authentication
 
-The application validates important business requirements.
+Role authorization
 
-### Customer
+Organization isolation
 
-* Name required
-* Valid mobile/email format
-* Customer type must be valid
-* Status must be valid
+Proper HTTP status codes
 
-### Product
+Structured error responses
 
-* Product name required
-* SKU required
-* Price cannot be invalid
-* Stock cannot become negative
-* Minimum stock quantity must be valid
+Pagination
 
-### Challan
+Search
 
-* Customer required
-* At least one product required
-* Quantity must be greater than zero
-* Product must exist
-* Sufficient stock required for confirmation
-* Draft challans do not reduce stock
-* Confirmed challans reduce stock
-* Cancelled challans cannot be confirmed
+Filtering
 
----
+PostgreSQL transactions
 
-# 🖥️ Main Application Screens
+Row-level locking
 
-The application includes/targets the following modules:
-
-### Dashboard
+Inventory validation
 
-* Total customers
-* Total products
-* Current inventory
-* Low-stock products
-* Challan statistics
-* Operational metrics
-
-### CRM
-
-* Customer list
-* Add customer
-* Edit customer
-* Customer details
-* Follow-up history
-
-### Inventory
-
-* Product list
-* Product creation
-* Product editing
-* Stock levels
-* Low-stock indicators
-* Warehouse location
+Audit logging
 
-### Stock
-
-* Stock movement list
-* IN/OUT movement
-* Movement reason
-* Created by
-* Timestamp
-
-### Sales Challans
-
-* Challan list
-* Create challan
-* Draft challan
-* Confirm challan
-* Cancel challan
-* Challan details
-* Product snapshots
-
-### Administration
-
-* User management
-* Role management
-* Access control
-
----
-
-# 📱 Responsive Design
-
-The frontend is designed to work across:
-
-* 💻 Desktop
-* 🖥️ Large screens
-* 📱 Mobile
-* 📲 Tablet
-
-The interface uses responsive layouts so that core business operations remain accessible on different screen sizes.
-
----
-
-# 🧪 Testing
-
-Before deployment, test the following critical workflows.
-
-## Authentication
-
-```text
-☐ Login with valid credentials
-☐ Reject invalid credentials
-☐ JWT validation
-☐ Unauthorized API access blocked
-☐ Role permissions enforced
-```
-
-## CRM
-
-```text
-☐ Create customer
-☐ Edit customer
-☐ Search customer
-☐ View customer details
-☐ Add follow-up
-☐ View follow-up history
-```
-
-## Inventory
-
-```text
-☐ Create product
-☐ Update product
-☐ Search product
-☐ Check stock
-☐ Low-stock alert
-☐ Create stock movement
-```
-
-## Challan
-
-```text
-☐ Create draft challan
-☐ Draft does not reduce stock
-☐ Confirm challan
-☐ Stock reduces correctly
-☐ OUT movement created
-☐ Insufficient stock rejected
-☐ Negative stock prevented
-☐ Product snapshot stored
-☐ Cancel challan
-☐ Cancelled challan cannot be confirmed
-```
-
----
-
-# 🧰 Postman API Testing
-
-Import the provided Postman collection into Postman.
-
-Recommended test sequence:
-
-```text
-1. Login
-   ↓
-2. Copy JWT token
-   ↓
-3. Get customers
-   ↓
-4. Create customer
-   ↓
-5. Create product
-   ↓
-6. Create stock movement
-   ↓
-7. Create draft challan
-   ↓
-8. Confirm challan
-   ↓
-9. Verify stock
-   ↓
-10. Verify stock movement
-```
-
----
-
-# 🐳 Docker
-
-The backend can be containerized using Docker.
-
-Build:
-
-```bash
-docker build -t mini-erp-backend .
-```
-
-Run:
-
-```bash
-docker run -p 5000:5000 mini-erp-backend
-```
-
-For a complete environment, Docker Compose can be used to run:
-
-```text
-Frontend
-Backend
+🧪 Postman API Testing
+The APIs have been tested and documented using Postman.
+
+The Postman collection is organized around the major application modules:
+
+01. Authentication
+02. Customers (CRM)
+03. Products & Inventory
+04. Stock Movements
+05. Sales Challans
+06. ERP Dashboard
+07. Existing POS APIs
+Typical Testing Flow
+Login
+  ↓
+Get Customers
+  ↓
+Create Customer
+  ↓
+Get Products
+  ↓
+Create / Update Product
+  ↓
+Add Stock
+  ↓
+Create Draft Challan
+  ↓
+Confirm Challan
+  ↓
+Verify Stock Movement
+  ↓
+Verify Dashboard
+API documentation contains:
+
+HTTP method
+
+Endpoint
+
+Authentication requirements
+
+Headers
+
+Request JSON
+
+Response JSON
+
+Validation errors
+
+HTTP status codes
+
+Role restrictions
+
+Business rules
+
+🗄️ Database
+Production Database
 PostgreSQL
-```
+Hosted on Neon
+The project uses PostgreSQL as the production operational database.
 
-together.
+The previous MongoDB/Mongoose data layer was migrated to PostgreSQL.
 
----
+🧩 Core Database Entities
+Organizations
+Stores
+Users
+Categories
+Products
+Store Prices
+Promo Codes
+Customers
+Customer Follow-ups
+Stock Movements
+Sales
+Invoices
+Orders
+Store Order Invoices
+Challans
+Challan Items
+🔒 Database Integrity
+The database layer uses:
 
-# ☁️ Deployment
+Relational constraints
 
-The application can be deployed using platforms such as:
+Foreign keys
 
-### Frontend
+Indexes
 
-* Vercel
-* Netlify
+Transactions
 
-### Backend
+Row-level locking
 
-* Render
-* Railway
-* Fly.io
-* AWS
+Validation constraints
 
-### Database
+Audit records
 
-* Neon
-* Supabase
-* Render PostgreSQL
-* AWS RDS
+Organization-level data isolation
 
----
+Stock-sensitive operations use transactional logic to prevent inconsistent inventory states.
 
-# 🌍 Production Environment
+🏗️ Application Architecture
+The application is organized into frontend, backend and database layers.
 
-Example production configuration:
+React Frontend
+      │
+      ▼
+REST API
+      │
+      ▼
+Express Backend
+      │
+      ├── Authentication
+      ├── RBAC
+      ├── Controllers
+      ├── Services
+      └── Validation
+      │
+      ▼
+PostgreSQL
+      │
+      ▼
+Neon
+🛠️ Technology Stack
+Frontend
+React
 
-```env
-NODE_ENV=production
+TypeScript
 
-PORT=5000
+HTML5
 
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE
+CSS
 
-JWT_SECRET=CHANGE_THIS_TO_A_SECURE_SECRET
+JavaScript / TypeScript
 
-JWT_EXPIRES_IN=7d
+Axios
 
-CORS_ORIGIN=https://your-frontend-domain.com
-```
+Responsive UI
 
----
+Backend
+Node.js
 
-# 🔒 Security
+Express.js
 
-Security practices include:
+REST APIs
 
-* JWT authentication
-* Password hashing
-* Role-based authorization
-* Environment-based secrets
-* Input validation
-* Protected API routes
-* CORS configuration
-* No secrets committed to Git
-* Server-side permission enforcement
+JWT
 
----
+bcrypt
 
-# 📈 Scalability
+PostgreSQL
 
-The architecture is designed to support future expansion.
+pg
 
-Potential additions include:
+Database
+PostgreSQL
 
-* Advanced reporting
-* Invoice generation
-* Payment tracking
-* Supplier management
-* Purchase orders
-* Purchase invoices
-* Multi-warehouse support
-* Product image storage
-* AWS S3 integration
-* Email notifications
-* WhatsApp notifications
-* Advanced analytics
-* Audit logs
-* Automated CI/CD
+Neon
 
----
-
-# ⭐ Bonus Features
-
-The project can support additional capabilities such as:
-
-* 🐳 Docker
-* 🔄 GitHub Actions
-* 📄 PDF invoice generation
-* 🖼️ Product image upload
-* ☁️ Cloud storage
-* 📊 Advanced reports
-* 📱 Responsive UI
-* 🧾 Printable documents
-* 🔎 Advanced search and filtering
-
----
-
-# 🧑‍💻 Development Workflow
-
-Recommended development workflow:
-
-```text
-Feature Request
-      ↓
-Requirement Analysis
-      ↓
-Database Design
-      ↓
-Backend API
-      ↓
-Validation & Business Logic
-      ↓
-Frontend Integration
-      ↓
-Testing
-      ↓
-Code Review
-      ↓
 Deployment
-```
+Render Static Site
 
----
+Render Web Service
 
-# 🌿 Git Workflow
+Neon PostgreSQL
 
-Recommended branch structure:
+Supporting Technologies
+jsPDF
 
-```text
-main
- │
- ├── develop
- │
- ├── feature/crm
- ├── feature/inventory
- ├── feature/challan
- ├── feature/rbac
- └── fix/stock-validation
-```
+Multer
 
-Example:
+Nodemailer
 
-```bash
-git checkout -b feature/crm
-```
+Twilio integration
 
-Commit changes:
+CSV parsing
 
-```bash
-git add .
-git commit -m "feat: add customer CRM module"
-```
+Date/time utilities
 
-Push:
+📁 Project Structure
+mini-erp-crm-operations-portal/
+│
+├── POS-Backend/
+│   ├── controllers/
+│   ├── db/
+│   │   ├── index.js
+│   │   ├── migrate.js
+│   │   ├── schema.sql
+│   │   └── test-connection.js
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   ├── scripts/
+│   ├── utils/
+│   ├── index.js
+│   ├── package.json
+│   └── .env.example
+│
+├── POS-Frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── modules/
+│   │   ├── pages/
+│   │   └── api.ts
+│   └── package.json
+│
+├── README.md
+└── ...
+The backend structure will be updated to the final TypeScript structure after the JavaScript-to-TypeScript migration.
 
-```bash
-git push origin feature/crm
-```
+💻 Local Development
+Prerequisites
+Install the following:
 
----
+Node.js 20+
 
-# 📌 Project Goals
+npm
 
-The primary goals of this project are:
+Git
 
-1. Centralize wholesale business operations.
-2. Improve customer relationship management.
-3. Maintain accurate inventory.
-4. Prevent stock inconsistencies.
-5. Provide controlled role-based access.
-6. Simplify sales challan operations.
-7. Maintain historical transaction accuracy.
-8. Provide a scalable full-stack architecture.
+PostgreSQL / Neon database access
 
----
+1. Clone the Repository
+git clone https://github.com/biswalkanha07/mini-erp-crm-operations-portal.git
 
-# 🎯 Business Benefits
+cd mini-erp-crm-operations-portal
+⚙️ Backend Setup
+Navigate to the backend:
 
-### For Admin
-
-* Complete operational visibility
-* User and role management
-* Inventory and sales oversight
-
-### For Sales
-
-* Faster customer management
-* Follow-up tracking
-* Quick challan creation
-
-### For Warehouse
-
-* Accurate stock information
-* Stock movement history
-* Low-stock monitoring
-
-### For Accounts
-
-* Customer and transaction visibility
-* Challan information
-* Financial workflow integration
-
----
-
-# 📊 Project Status
-
-| Module                   | Status                    |
-| ------------------------ | ------------------------- |
-| Authentication           | ✅ Implemented             |
-| JWT Authorization        | ✅ Implemented             |
-| Role-Based Access        | ✅ Implemented / Extended  |
-| Customer CRM             | 🚧 In Progress / Extended |
-| Customer Follow-ups      | 🚧 In Progress            |
-| Product Management       | ✅ Existing + Extended     |
-| Inventory                | ✅ Existing + Extended     |
-| Minimum Stock Alerts     | 🚧 Added                  |
-| Warehouse Location       | 🚧 Added                  |
-| Stock Movements          | 🚧 Added                  |
-| Sales Challans           | 🚧 Added                  |
-| Draft / Confirm / Cancel | 🚧 Added                  |
-| Product Snapshots        | 🚧 Added                  |
-| Dashboard                | ✅ Existing + Extended     |
-| REST APIs                | ✅                         |
-| Validation               | ✅                         |
-| Pagination & Search      | ✅                         |
-| Docker                   | ✅ Supported               |
-| PDF / Invoice            | ⭐ Bonus                   |
-| Deployment               | 🚧 Configuration Required |
-
-> Update the status column before final submission to reflect the actual implementation state.
-
----
-
-# 📝 Known Limitations
-
-The following items may depend on the final deployment and implementation:
-
-* Production infrastructure configuration
-* Cloud database setup
-* Final frontend/backend deployment URLs
-* Production credentials
-* Advanced analytics
-* Optional third-party integrations
-
-These should be documented honestly in the final project submission.
-
----
-
-# 🔮 Future Improvements
-
-Future versions can include:
-
-```text
-Multi-Warehouse Management
-        ↓
-Supplier Management
-        ↓
-Purchase Management
-        ↓
-Payment Management
-        ↓
-Advanced Financial Reports
-        ↓
-Automated Notifications
-        ↓
-AI-Based Sales Insights
-```
-
----
-
-# 🤝 Contributing
-
-Contributions are welcome.
-
-### Steps
-
-```bash
-git clone <repository-url>
-
-git checkout -b feature/your-feature
+cd POS-Backend
+Install dependencies:
 
 npm install
+Create a .env file:
 
-# Make your changes
+DATABASE_URL=your_postgresql_connection_string
+JWT_SECRET=your_jwt_secret
+NODE_ENV=development
+Start the backend:
 
-git add .
+npm start
+🗄️ Database Setup
+Test the PostgreSQL connection:
 
-git commit -m "feat: describe your change"
+npm run db:test
+Run the database migration:
 
-git push origin feature/your-feature
-```
+npm run db:migrate
+🎨 Frontend Setup
+From the project root:
 
-Then open a Pull Request.
+cd POS-Frontend
+Install dependencies:
 
----
+npm install
+Configure the frontend API URL:
 
-# 📄 License
+REACT_APP_API_URL=http://localhost:5050/api
+Run the frontend using the development command configured in the frontend package.
 
-This project is intended for educational, evaluation, and demonstration purposes.
+🔐 Environment Variables
+Backend
+DATABASE_URL=
+JWT_SECRET=
+NODE_ENV=
+Frontend
+REACT_APP_API_URL=
+Security
+Do not commit:
 
-Add an appropriate open-source license if the repository is intended for public distribution.
+.env
+database passwords
+JWT secrets
+API keys
+Twilio credentials
+email passwords
+private credentials
+Use .env.example to document required environment variables.
 
----
+🚀 Production Deployment
+The application is deployed using Render with Neon PostgreSQL.
 
-# 👨‍💻 Author
+Backend
+https://mini-erp-crm-operations-portal-q5pf.onrender.com
+Backend API
+https://mini-erp-crm-operations-portal-q5pf.onrender.com/api
+Health Check
+GET /api/health
+The health endpoint verifies application and PostgreSQL connectivity.
 
-**Aparupa Raj**
+Frontend
+<ADD_FINAL_FRONTEND_RENDER_URL>
+📊 Testing & Verification
+The implementation has been verified through module-level and regression testing.
 
-🔗 LinkedIn:
-https://www.linkedin.com/in/aparuparaj
+Module	Result
+Authentication / RBAC	✅ 26 / 26
+CRM	✅ 24 / 24
+Inventory	✅ 27 / 27
+Stock Movements	✅ 29 / 29
+Sales Challans	✅ 29 / 29
+ERP Dashboard	✅ 26 / 26
+Existing POS Regression	✅ 17 / 17
+Frontend Authentication	✅ 9 / 9
+Frontend Production Build	✅ PASS
+Recorded Regression Result
+187 / 187 tests passed
+The frontend production build also completed successfully.
 
----
+🔄 PostgreSQL Migration
+The project was migrated from the original MongoDB/Mongoose data layer to PostgreSQL.
 
-# 📬 Contact
+The migration included:
 
-For questions, collaboration, or project discussions, please open an issue in the repository or connect through LinkedIn.
+Relational database schema
 
----
+Existing business data migration
 
-# ⭐ If You Like This Project
+Organizations
 
-If this project was useful or interesting, consider giving the repository a ⭐ star.
+Stores
 
----
+Users
 
+Categories
+
+Products
+
+Customers
+
+Sales
+
+Invoices
+
+Orders
+
+Stock-related data
+
+PostgreSQL services
+
+PostgreSQL controllers
+
+PostgreSQL API routes
+
+The production runtime uses PostgreSQL.
+
+🔐 Security & Data Isolation
+The application implements:
+
+JWT authentication
+
+bcrypt password hashing
+
+Role-based access control
+
+Protected routes
+
+Organization-level isolation
+
+Server-side authorization
+
+Request validation
+
+Database constraints
+
+Transaction-safe stock operations
+
+Users cannot access data outside their authorized organization context.
+
+📋 Role Access Summary
+Feature	Admin	Sales	Warehouse	Accounts
+Login	✅	✅	✅	✅
+Customers	✅	✅	👁️	👁️
+Customer Follow-ups	✅	✅	❌	👁️
+Products	✅	👁️	✅	👁️
+Inventory	✅	👁️	✅	👁️
+Stock Movements	✅	👁️	✅	👁️
+Sales Challans	✅	✅	👁️	👁️
+Dashboard	✅	✅	✅	✅
+User Management	✅	❌	❌	❌
+Legend:
+
+✅ Full / permitted access
+👁️ View access
+❌ Restricted
+📦 Sales Challan Transaction Safety
+The challan confirmation process is designed to avoid partial stock updates.
+
+The system:
+
+Validates the challan.
+
+Locks the required product rows.
+
+Checks stock availability.
+
+Rejects insufficient stock.
+
+Deducts inventory.
+
+Creates stock movement records.
+
+Updates challan status.
+
+Commits the transaction.
+
+If any critical operation fails, the transaction is rolled back.
+
+📝 API Error Handling
+The API uses appropriate HTTP status codes.
+
+Code	Meaning
+200	Successful request
+201	Resource created
+400	Validation / bad request
+401	Authentication required / invalid credentials
+403	Insufficient permission
+404	Resource not found
+409	Business rule conflict
+500	Internal server error
+Example insufficient stock response:
+
+{
+  "status": "error",
+  "message": "Insufficient stock",
+  "data": {
+    "productId": "PRODUCT_ID",
+    "availableStock": 5,
+    "requestedQuantity": 10
+  }
+}
+📚 Documentation
+The project documentation includes:
+
+Project overview
+
+Setup instructions
+
+API documentation
+
+Postman testing
+
+Architecture explanation
+
+Database information
+
+Role permissions
+
+Business rules
+
+Deployment information
+
+Testing results
+
+Known limitations
+
+🌐 Project Links
+GitHub Repository
+https://github.com/biswalkanha07/mini-erp-crm-operations-portal
+Active Branch
+erp-final
+Backend
+https://mini-erp-crm-operations-portal-q5pf.onrender.com
+API Base URL
+https://mini-erp-crm-operations-portal-q5pf.onrender.com/api
+Health Endpoint
+https://mini-erp-crm-operations-portal-q5pf.onrender.com/api/health
+Frontend
+<ADD_FINAL_FRONTEND_RENDER_URL>
+👤 Evaluation Credentials
+For security, credentials should not be committed to this public repository.
+
+Provide the evaluator credentials through the official assignment submission channel.
+
+Role	Email	Password
+👑 Admin	<ADMIN_EMAIL>	<PASSWORD>
+💼 Sales	<SALES_EMAIL>	<PASSWORD>
+🏭 Warehouse	<WAREHOUSE_EMAIL>	<PASSWORD>
+💰 Accounts	<ACCOUNTS_EMAIL>	<PASSWORD>
+📋 Case Study Requirement Coverage
+Requirement	Status
+Authentication	✅
+JWT Authentication	✅
+Admin Role	✅
+Sales Role	✅
+Warehouse Role	✅
+Accounts Role	✅
+Customer Management	✅
+Customer Search	✅
+Customer Details	✅
+Customer Follow-ups	✅
+Product Management	✅
+Inventory Management	✅
+Minimum Stock Alert	✅
+Warehouse / Location	✅
+Stock Movement Log	✅
+IN / OUT Movements	✅
+Stock Audit	✅
+Sales Challan	✅
+Multiple Challan Products	✅
+Automatic Challan Number	✅
+Draft Challan	✅
+Confirmed Challan	✅
+Cancelled Challan	✅
+Product Snapshots	✅
+No Negative Stock	✅
+Insufficient Stock Error	✅
+REST APIs	✅
+Request Validation	✅
+HTTP Status Codes	✅
+Error Handling	✅
+Pagination	✅
+Search / Filtering	✅
+Responsive React UI	✅
+PostgreSQL	✅
+Neon Database	✅
+Backend Deployment	✅
+Frontend Deployment	✅
+README Documentation	✅
+Postman/API Documentation	✅
+Architecture Explanation	✅
+Known Limitations	✅
+Backend TypeScript	🔄 Final Migration
+⚠️ Known Limitations
+The backend is currently implemented using Node.js + Express.js with JavaScript. The final migration to TypeScript is the remaining technical compliance task.
+
+The repository retains broader legacy POS functionality beyond the core ERP/CRM case-study scope.
+
+Some legacy frontend components may contain lint warnings even though the production build completes successfully.
+
+Optional email/SMS integrations require their respective production credentials and configuration when enabled.
+
+The core ERP/CRM workflows are implemented and covered by the recorded regression tests.
+
+🔮 Future Improvements
+Possible future enhancements include:
+
+Advanced business analytics
+
+Extended reporting
+
+PDF challan generation
+
+Cloud-based product image storage
+
+Automated CI/CD workflows
+
+Dockerized deployment
+
+Granular permission management
+
+Advanced notification workflows
+
+Additional ERP modules
+
+📋 Final Submission Checklist
+Before submitting the project, verify:
+
+ GitHub repository is accessible
+
+ Final branch contains the latest code
+
+ README is updated
+
+ Frontend live URL is added
+
+ Backend live URL is verified
+
+ PostgreSQL / Neon is connected
+
+ Admin credentials are prepared
+
+ Sales credentials are prepared
+
+ Warehouse credentials are prepared
+
+ Accounts credentials are prepared
+
+ Postman collection is ready
+
+ API documentation is ready
+
+ Architecture explanation is included
+
+ Known limitations are documented
+
+ Final live E2E testing is completed
+
+ Backend TypeScript migration is completed
+
+ Final production build passes
+
+ No secrets are committed to GitHub
+
+🏁 Project Status
 <p align="center">
-
 <strong>Mini ERP + CRM Operations Portal</strong>
 
-<br/>
+<br><br>
 
-Built with ❤️ using React, TypeScript, Node.js, Express.js and PostgreSQL.
+Wholesale & Distribution Operations Platform
+
+<br><br>
+
+<strong>ERP • CRM • Inventory • Stock Audit • Sales Challans • RBAC</strong>
+
+<br><br>
+
+React • TypeScript • Node.js • Express.js • PostgreSQL • Neon • Render
 
 </p>
+<p align="center"> Built as a focused full-stack ERP + CRM operations solution for wholesale and distribution workflows. </p> ```

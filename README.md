@@ -718,7 +718,7 @@ GET /api/health
 The health endpoint verifies application and PostgreSQL connectivity.
 
 Frontend
-<ADD_FINAL_FRONTEND_RENDER_URL>
+<https://erpandcrmportal.onrender.com/>
 📊 Testing & Verification
 The implementation has been verified through module-level and regression testing.
 
@@ -900,14 +900,6 @@ Frontend
 For security, credentials should not be committed to this public repository.
 
 Provide the evaluator credentials through the official assignment submission channel.
-
-Role	Email	Password
-👑 Admin	<ADMIN_EMAIL>	<PASSWORD>
-💼 Sales	<SALES_EMAIL>	<PASSWORD>
-🏭 Warehouse	<WAREHOUSE_EMAIL>	<PASSWORD>
-💰 Accounts	<ACCOUNTS_EMAIL>	<PASSWORD>
-📋 Case Study Requirement Coverage
-Requirement	Status
 Authentication	✅
 JWT Authentication	✅
 Admin Role	✅
